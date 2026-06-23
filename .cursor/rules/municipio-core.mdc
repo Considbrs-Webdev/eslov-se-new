@@ -1,0 +1,17 @@
+---
+description: Core boundaries for the Eslöv Municipio DB migration (target repo)
+alwaysApply: true
+---
+
+# Municipio Framework Core Rules
+
+You are working on **Eslöv's DB-first migration** to standard Municipio deployment.
+
+1. **NEVER Modify Core:** Do not edit `wp-content/themes/municipio/`.
+2. **All migration code in one plugin:** `eslov-customisation` — WP-CLI migrations and runtime shims.
+3. **No LTS plugin porting** unless explicitly requested — transform data or shim instead.
+4. **Target repo only:** Implement in `eslov-se-new/`. Use `eslov-se/` only to grep old meta keys and module slugs.
+5. **Log fixes:** Update `.cursor/plans/db-migration.md` breakage matrix for every fix.
+6. **Prefer one-time migrations over legacy shims:** Rewrite DB data to match new Municipio/Modularity standards (`wp eslov migrate …`). Use runtime shims only when migration is unsafe/infeasible, for upstream core bugs, or for ongoing site preferences — not to permanently support old LTS meta shapes.
+7. **Extend via hooks** when shimming — see `municipio-extend-via-hooks` and `eslov-adaptation-plugin` skills.
+8. **Local dev:** `ddev wp …` from `eslov-se-new/`. See `ddev-wp-cli` skill.

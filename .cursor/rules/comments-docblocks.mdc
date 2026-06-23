@@ -1,0 +1,17 @@
+---
+description: PHP comment and PHPDoc standards — avoid chat-context inline comments; use docblocks for public API.
+globs: "**/*.php"
+alwaysApply: false
+---
+
+# Comments and Docblocks
+
+## Do not add
+- **Unnecessary inline comments** that explain your implementation decision.
+- **Chat-context comments** that only make sense to someone in the current conversation.
+- Comments that restate what the code obviously does.
+
+## Do use
+- **PHPDoc/docblocks** for classes, methods, and functions: short description plus `@param`, `@return`, `@throws` where useful.
+
+If behavior must be documented for future maintainers, put a brief note in the **method docblock**, not as an inline comment.
