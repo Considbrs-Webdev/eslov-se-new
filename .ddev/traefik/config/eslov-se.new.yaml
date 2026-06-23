@@ -1,0 +1,98 @@
+#ddev-generated
+# If you remove the ddev-generated line above you
+# are responsible for maintaining this file. DDEV will not then
+# update it, for example if you add `additional_hostnames`, etc.
+
+http:
+  routers:
+    eslov-se.new-xhgui-80-http:
+      entrypoints:
+        - http-8143
+      rule: HostRegexp(`^eslov-se\.new\.ddev\.site$`)
+      
+      service: "eslov-se.new-xhgui-80"
+      tls: false
+      # middlewares:
+      #   - "eslov-se.new-redirectHttps"
+    eslov-se.new-web-80-http:
+      entrypoints:
+        - http-80
+      rule: HostRegexp(`^eslov-se\.new\.ddev\.site$`)
+      
+      service: "eslov-se.new-web-80"
+      tls: false
+      # middlewares:
+      #   - "eslov-se.new-redirectHttps"
+    eslov-se.new-web-8025-http:
+      entrypoints:
+        - http-8025
+      rule: HostRegexp(`^eslov-se\.new\.ddev\.site$`)
+      
+      service: "eslov-se.new-web-8025"
+      tls: false
+      # middlewares:
+      #   - "eslov-se.new-redirectHttps"
+    
+    
+    eslov-se.new-xhgui-80-https:
+      entrypoints:
+        - http-8142
+      rule: HostRegexp(`^eslov-se\.new\.ddev\.site$`)
+      
+      service: "eslov-se.new-xhgui-80"
+      
+      tls: true
+      
+    
+    
+    eslov-se.new-web-80-https:
+      entrypoints:
+        - http-443
+      rule: HostRegexp(`^eslov-se\.new\.ddev\.site$`)
+      
+      service: "eslov-se.new-web-80"
+      
+      tls: true
+      
+    eslov-se.new-web-8025-https:
+      entrypoints:
+        - http-8026
+      rule: HostRegexp(`^eslov-se\.new\.ddev\.site$`)
+      
+      service: "eslov-se.new-web-8025"
+      
+      tls: true
+      
+    
+
+  middlewares:
+    eslov-se.new-redirectHttps:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+  services:
+    eslov-se.new-xhgui-80:
+      loadbalancer:
+        servers:
+          - url: http://ddev-eslov-se.new-xhgui:80
+        
+    
+    eslov-se.new-web-80:
+      loadbalancer:
+        servers:
+          - url: http://ddev-eslov-se.new-web:80
+        
+    eslov-se.new-web-8025:
+      loadbalancer:
+        servers:
+          - url: http://ddev-eslov-se.new-web:8025
+        
+    
+    
+    
+
+tls:
+  certificates:
+    - certFile: /mnt/ddev-global-cache/traefik/certs/eslov-se.new.crt
+      keyFile: /mnt/ddev-global-cache/traefik/certs/eslov-se.new.key

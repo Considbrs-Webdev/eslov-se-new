@@ -10,14 +10,21 @@
 !/wp-content/mu-plugins
 !/wp-content/mu-plugins/loader.php
 !/wp-content/mu-plugins/xmlrpc.php
+!/wp-content/mu-plugins/ddev-remote-media.php
 /vendor/
 /wp/
 .DS_Store
 auth.json
 db/*.sql
+eslov-db.sql
+eslov-db.zip
+after-import.sql.gz
+*.sql.gz
+*:Zone.Identifier
 # Devcontainer
 .htaccess
 .devcontainer/.env
+.ddev/env/remote-media.env
 /.devcontainer/scripts/db-cache/
 !/.devcontainer/config/.htaccess
 *.pem
