@@ -16,11 +16,11 @@
 .DS_Store
 auth.json
 db/*.sql
+# Reference DB dumps (local only — obtain from team or export)
 eslov-db.sql
-eslov-db.zip
+eslov-*-lean.sql
 after-import.sql.gz
 *.sql.gz
-*:Zone.Identifier
 # Devcontainer
 .htaccess
 .devcontainer/.env
@@ -36,3 +36,7 @@ db/db.sqlite
 .claude/settings.local.json
 .composer-merge-active
 composer.*.bkup
+# Visual diff harness artifacts
+tools/visual-diff/node_modules/
+tools/visual-diff/output/
+tools/visual-diff/pages.generated.json

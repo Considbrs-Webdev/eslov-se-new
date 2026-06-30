@@ -2,5 +2,13 @@
   "name": "municipio-se/municipio-deployment-custom",
   "license": "MIT",
   "description": "Additions for you own install of municipio.",
-  "require": {}
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/Considbrs-Webdev/eslov-customisation"
+    }
+  ],
+  "require": {
+    "municipio-se/eslov-customisation": "dev-main"
+  }
 }
