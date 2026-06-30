@@ -13,7 +13,7 @@ description: >-
 
 | | |
 |---|---|
-| Method | Import `eslov-db.sql` → fix incompatibilities iteratively |
+| Method | Import `eslov-2026-06-23-77d6623-lean.sql` → fix incompatibilities iteratively |
 | Code | **No LTS plugin porting** — all fixes in `eslov-customisation` |
 | LTS repo | Forensics only — understand old **data**, not port PHP |
 
@@ -26,10 +26,12 @@ description: >-
 
 ## Reference database
 
-**File:** `eslov-db.sql` (repo root, ~1.6 GB, MariaDB 10.11, gitignored)
+**File:** `eslov-2026-06-23-77d6623-lean.sql` (repo root, ~610 MB, MariaDB 11.8 lean, gitignored)
+
+Lean export: log/audit/cache table data omitted (Aryo Activity Log incl. failed-login attempts; Action Scheduler; etc.). Content and module data intact.
 
 ```bash
-ddev import-db --file=eslov-db.sql
+ddev import-db --file=eslov-2026-06-23-77d6623-lean.sql
 ```
 
 Dump `siteurl`: `https://storatorg.eslov.w8e.se`. Also search-replace `https://eslov.se` in content. See `ddev-wp-cli` skill.
@@ -37,7 +39,7 @@ Dump `siteurl`: `https://storatorg.eslov.w8e.se`. Also search-replace `https://e
 ## Agent loop
 
 ```
-1. Import eslov-db.sql (or restore after-import snapshot)
+1. Import eslov-2026-06-23-77d6623-lean.sql (or restore after-import snapshot)
 2. Boot site — note first fatal/error/warning
 3. Classify fix type (see eslov-adaptation-plugin skill)
 4. Implement in eslov-customisation

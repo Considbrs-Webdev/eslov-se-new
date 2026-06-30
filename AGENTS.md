@@ -13,17 +13,18 @@ Entry point for AI agents working on **Eslöv municipio LTS → standard Municip
 ### The migration loop
 
 ```
-import eslov-db.sql → boot site → read error/symptom → classify fix → implement in eslov-customisation → verify → log in db-migration plan
+import eslov-2026-06-23-77d6623-lean.sql → boot site → read error/symptom → classify fix → implement in eslov-customisation → verify → log in db-migration plan
 ```
 
 ### Reference database
 
 | | |
 |---|---|
-| **File** | `eslov-db.sql` (repo root, ~1.6 GB) |
-| **Format** | MariaDB 10.11 dump (`wordpress` database) |
+| **File** | `eslov-2026-06-23-77d6623-lean.sql` (repo root, ~610 MB) |
+| **Format** | MariaDB 11.8 lean dump (`eslov` database) |
+| **Lean** | Log/audit/cache table **structures** kept; **data omitted** (incl. Aryo Activity Log / failed-login rows) |
 | **Git** | Local only — listed in `.gitignore`, do not commit |
-| **Import** | `ddev import-db --file=eslov-db.sql` |
+| **Import** | `ddev import-db --file=eslov-2026-06-23-77d6623-lean.sql` |
 
 After import, run URL search-replace (dump `siteurl` is `https://storatorg.eslov.w8e.se`; post content may also reference `https://eslov.se`). See `ddev-wp-cli` skill.
 
@@ -91,5 +92,5 @@ Primary work site:
 
 ```bash
 cd eslov-se-new && ddev start
-ddev import-db --file=eslov-db.sql
+ddev import-db --file=eslov-2026-06-23-77d6623-lean.sql
 ```

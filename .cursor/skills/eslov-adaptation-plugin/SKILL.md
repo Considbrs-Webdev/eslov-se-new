@@ -11,7 +11,7 @@ description: >-
 
 All Eslöv-specific migration and adaptation code lives in **one plugin**, similar to Piteå's `pitea-customisation`.
 
-**Reference data:** `eslov-db.sql` at repo root (~1.6 GB). Import with `ddev import-db --file=eslov-db.sql` before running migration commands.
+**Reference data:** `eslov-2026-06-23-77d6623-lean.sql` at repo root (~610 MB lean dump). Import with `ddev import-db --file=eslov-2026-06-23-77d6623-lean.sql` before running migration commands. Log/audit/cache table data (incl. Aryo failed-login rows) is omitted — content and module data are intact.
 
 **Location:** `wp-content/plugins/eslov-customisation/` (or Composer VCS package in `composer.local.json`).
 

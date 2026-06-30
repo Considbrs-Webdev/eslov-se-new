@@ -8,16 +8,17 @@ description: >-
 
 # ddev & WP-CLI (Eslöv migration workspace)
 
-Primary work happens in **`eslov-se-new`** with the reference database **`eslov-db.sql`**.
+Primary work happens in **`eslov-se-new`** with the reference database **`eslov-2026-06-23-77d6623-lean.sql`**.
 
 ## Reference database
 
 | | |
 |---|---|
-| File | `eslov-db.sql` (repo root, ~1.6 GB) |
-| Format | MariaDB 10.11 dump |
+| File | `eslov-2026-06-23-77d6623-lean.sql` (repo root, ~610 MB) |
+| Format | MariaDB 11.8 lean dump |
 | Git | Local only — do not commit |
 | Dump `siteurl` | `https://storatorg.eslov.w8e.se` |
+| Lean | Log/audit/cache tables: structure only (incl. `*_aryo_activity_log` / failed-login rows) |
 
 ## Two sites
 
@@ -37,8 +38,8 @@ Import the reference dump, then fix URLs:
 ```bash
 cd eslov-se-new
 
-# Import (~1.6 GB — allow several minutes)
-ddev import-db --file=eslov-db.sql
+# Import lean reference dump (~610 MB)
+ddev import-db --file=eslov-2026-06-23-77d6623-lean.sql
 
 # URL fix — dump siteurl is storatorg.eslov.w8e.se; content may use eslov.se
 ddev wp search-replace 'https://storatorg.eslov.w8e.se' 'https://eslov-se-new.ddev.site' --all-tables

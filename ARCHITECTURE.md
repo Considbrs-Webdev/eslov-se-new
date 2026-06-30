@@ -10,15 +10,18 @@ Concise map for agents migrating **production data** from Municipio LTS to stand
 
 ## Reference database
 
-All migration work uses **`eslov-db.sql`** at the repo root:
+All migration work uses **`eslov-2026-06-23-77d6623-lean.sql`** at the repo root:
 
 | Property | Value |
 |----------|-------|
-| File | `eslov-db.sql` (~1.6 GB) |
-| Format | MariaDB 10.11 dump |
-| Source DB name | `wordpress` |
+| File | `eslov-2026-06-23-77d6623-lean.sql` (~610 MB) |
+| Format | MariaDB 11.8 lean dump |
+| Source DB name | `eslov` |
 | `siteurl` / `home` in dump | `https://storatorg.eslov.w8e.se` |
 | Content URLs | Also contains `https://eslov.se` in posts/options |
+| Lean omissions | Log/audit/cache tables: structure only, no row data (see below) |
+
+**Lean dump:** Row data is omitted from tables that do not affect migration testing — e.g. `*_aryo_activity_log` (Aryo Activity Log, including failed-login attempts), Action Scheduler, broken-link detector, WP Mail SMTP logs, Redirection 404 log, Content Insights. All content, options, post meta, and module data are intact.
 
 **Git:** local reference only — in `.gitignore`. Replace the file to refresh from a newer export; update the baseline table in `.cursor/plans/db-migration.md`.
 
@@ -26,7 +29,7 @@ All migration work uses **`eslov-db.sql`** at the repo root:
 
 ```bash
 cd eslov-se-new
-ddev import-db --file=eslov-db.sql
+ddev import-db --file=eslov-2026-06-23-77d6623-lean.sql
 ddev wp search-replace 'https://storatorg.eslov.w8e.se' 'https://eslov-se-new.ddev.site' --all-tables
 ddev wp search-replace 'https://eslov.se' 'https://eslov-se-new.ddev.site' --all-tables
 ddev wp cache flush && ddev wp rewrite flush
