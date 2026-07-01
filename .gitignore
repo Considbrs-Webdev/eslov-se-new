@@ -15,6 +15,25 @@
 .DS_Store
 auth.json
 db/*.sql
+
+# Reference DB dumps (local only — obtain from team or export)
+eslov-db.sql
+eslov-db.zip
+eslov-*-lean.sql
+after-import.sql.gz
+*.sql.gz
+*:Zone.Identifier
+
+# Local DDEV / migration dev environment (not part of deployment)
+.ddev/
+wp-config-ddev.php
+wp-cli.yml
+
+# Migration workspace markdown at repo root (agent context lives in .cursor/)
+AGENTS.md
+ARCHITECTURE.md
+migration-status*.md
+
 # Devcontainer
 .htaccess
 .devcontainer/.env
@@ -29,3 +48,11 @@ db/db.sqlite
 .claude/settings.local.json
 .composer-merge-active
 composer.*.bkup
+package-lock.json
+
+# Visual diff harness — tool source is tracked; local run artifacts are not
+tools/visual-diff/node_modules/
+tools/visual-diff/output/
+tools/visual-diff/pages.generated.json
+tools/visual-diff/playwright-report/
+tools/visual-diff/test-results/

@@ -1,0 +1,23 @@
+{
+  "name": "eslov-visual-diff",
+  "private": true,
+  "type": "module",
+  "description": "Screenshot comparison harness for Eslöv LTS/production vs migrated DDEV",
+  "scripts": {
+    "install:browsers": "playwright install chromium",
+    "capture": "node src/run.mjs capture",
+    "diff": "node src/run.mjs diff",
+    "run": "node src/run.mjs",
+    "run:docker": "bash run-docker.sh run",
+    "audit-pages": "bash audit-pages.sh",
+    "open-report": "bash open-report.sh",
+    "triage": "node src/triage.mjs"
+  },
+  "dependencies": {
+    "pixelmatch": "^7.1.0",
+    "pngjs": "^7.0.0"
+  },
+  "devDependencies": {
+    "playwright": "1.61.1"
+  }
+}

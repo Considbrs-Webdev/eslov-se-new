@@ -1,0 +1,10 @@
+---
+description: Editors use the block editor only; do not assume Classic Editor or TinyMCE.
+alwaysApply: true
+---
+
+# Editor: block editor only
+
+This project does **not** use the WordPress Classic Editor for content work. Assume **Gutenberg (block editor)** and the **REST API** for saves.
+
+Modularity stores module layouts as post meta / related CPTs via the block editor.

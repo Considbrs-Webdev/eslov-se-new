@@ -1,0 +1,1043 @@
+{
+    "coverage": {
+        "generated_at": "2026-06-30T11:42:48+00:00",
+        "page_count": 69,
+        "module_types_on_main": {
+            "mod-navigation": true,
+            "mod-hero": true,
+            "mod-posts": true,
+            "mod-manualinput": true,
+            "mod-contacts": true,
+            "mod-section-split": true,
+            "mod-section-card": true,
+            "mod-timeline": true,
+            "mod-inlaylist": true,
+            "mod-table": true,
+            "mod-fileslist": true,
+            "mod-notice": true,
+            "mod-iframe": true,
+            "mod-form": true,
+            "mod-event": true,
+            "mod-text": true,
+            "mod-image": true
+        },
+        "subsites": [
+            3,
+            4,
+            7,
+            8,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16
+        ],
+        "tags": {
+            "layout": 15,
+            "module": 38,
+            "mod-navigation": 7,
+            "shim": 2,
+            "utility": 1,
+            "mod-hero": 6,
+            "mod-posts": 10,
+            "mod-manualinput": 1,
+            "mod-contacts": 1,
+            "mod-section-split": 1,
+            "mod-section-card": 1,
+            "mod-timeline": 1,
+            "mod-inlaylist": 1,
+            "mod-table": 1,
+            "mod-fileslist": 1,
+            "mod-notice": 1,
+            "mod-iframe": 1,
+            "mod-form": 1,
+            "mod-event": 3,
+            "mod-text": 1,
+            "mod-image": 1,
+            "cpt": 16,
+            "archive": 2,
+            "nyheter": 1,
+            "event": 13,
+            "single": 3,
+            "job-listing": 1,
+            "subsite": 42
+        }
+    },
+    "pages": [
+        {
+            "id": "home",
+            "label": "Homepage",
+            "blog_id": 1,
+            "tags": [
+                "layout",
+                "module"
+            ],
+            "path": "/",
+            "reference": "https://eslov.se/",
+            "target": "https://eslov-se-new.ddev.site/",
+            "notes": "mod-navigation grid launcher + footer bar"
+        },
+        {
+            "id": "tree-highlighted",
+            "label": "Tree highlighted navigation",
+            "blog_id": 1,
+            "tags": [
+                "module",
+                "mod-navigation"
+            ],
+            "path": "/omsorg-stod/akut-hjalp/",
+            "reference": "https://eslov.se/omsorg-stod/akut-hjalp/",
+            "target": "https://eslov-se-new.ddev.site/omsorg-stod/akut-hjalp/",
+            "notes": "mod-navigation tree highlighted format"
+        },
+        {
+            "id": "section-child-pills",
+            "label": "Child page pills below title",
+            "blog_id": 1,
+            "tags": [
+                "shim",
+                "layout"
+            ],
+            "path": "/bygga-bo-miljo/kartor-adresser-och-matning/",
+            "reference": "https://eslov.se/bygga-bo-miljo/kartor-adresser-och-matning/",
+            "target": "https://eslov-se-new.ddev.site/bygga-bo-miljo/kartor-adresser-och-matning/",
+            "notes": "ChildPageLinksBelowTitle shim"
+        },
+        {
+            "id": "search",
+            "label": "Search results",
+            "blog_id": 1,
+            "tags": [
+                "utility"
+            ],
+            "path": "/?s=skola",
+            "reference": "https://eslov.se/?s=skola",
+            "target": "https://eslov-se-new.ddev.site/?s=skola",
+            "notes": "Dynamic search results — compare chrome not hit list"
+        },
+        {
+            "id": "auto-1-71844",
+            "label": "Arbete och arbetsmarknad",
+            "blog_id": 1,
+            "post_id": 71844,
+            "tags": [
+                "layout",
+                "mod-navigation"
+            ],
+            "path": "/arbete-och-arbetsmarknad/",
+            "reference": "https://eslov.se/arbete-och-arbetsmarknad/",
+            "target": "https://eslov-se-new.ddev.site/arbete-och-arbetsmarknad/",
+            "notes": "Top-sidebar band + mod-navigation buttons"
+        },
+        {
+            "id": "auto-1-589207",
+            "label": "Återbruk, naturresurser och cirkulär ekonomi",
+            "blog_id": 1,
+            "post_id": 589207,
+            "tags": [
+                "layout",
+                "mod-navigation"
+            ],
+            "path": "/bygga-bo-miljo/miljo-energi-och-klimat/aterbruk-naturresurser-och-cirkular-ekonomi/",
+            "reference": "https://eslov.se/bygga-bo-miljo/miljo-energi-och-klimat/aterbruk-naturresurser-och-cirkular-ekonomi/",
+            "target": "https://eslov-se-new.ddev.site/bygga-bo-miljo/miljo-energi-och-klimat/aterbruk-naturresurser-och-cirkular-ekonomi/",
+            "notes": "Content area + right-sidebar navigation"
+        },
+        {
+            "id": "auto-1-589187",
+            "label": "Miljö, energi och klimat",
+            "blog_id": 1,
+            "post_id": 589187,
+            "tags": [
+                "module",
+                "mod-hero"
+            ],
+            "path": "/bygga-bo-miljo/miljo-energi-och-klimat/",
+            "reference": "https://eslov.se/bygga-bo-miljo/miljo-energi-och-klimat/",
+            "target": "https://eslov-se-new.ddev.site/bygga-bo-miljo/miljo-energi-och-klimat/",
+            "notes": "Hero in slider-area"
+        },
+        {
+            "id": "auto-1-588812",
+            "label": "Artscape – muralmålningar",
+            "blog_id": 1,
+            "post_id": 588812,
+            "tags": [
+                "module",
+                "mod-posts"
+            ],
+            "path": "/uppleva-gora/kultur/konst/artscape-muralmalningar/",
+            "reference": "https://eslov.se/uppleva-gora/kultur/konst/artscape-muralmalningar/",
+            "target": "https://eslov-se-new.ddev.site/uppleva-gora/kultur/konst/artscape-muralmalningar/",
+            "notes": "mod-posts in default template"
+        },
+        {
+            "id": "auto-1-558888",
+            "label": "Teater",
+            "blog_id": 1,
+            "post_id": 558888,
+            "tags": [
+                "module",
+                "mod-manualinput"
+            ],
+            "path": "/uppleva-gora/eslovs-kulturskola/det-har-kan-du-lasa-hos-oss/teater/",
+            "reference": "https://eslov.se/uppleva-gora/eslovs-kulturskola/det-har-kan-du-lasa-hos-oss/teater/",
+            "target": "https://eslov-se-new.ddev.site/uppleva-gora/eslovs-kulturskola/det-har-kan-du-lasa-hos-oss/teater/",
+            "notes": "mod-manualinput repeater cards"
+        },
+        {
+            "id": "auto-1-583580",
+            "label": "Fri entré till Karlsrobadets utebad under sommarlovet",
+            "blog_id": 1,
+            "post_id": 583580,
+            "tags": [
+                "module",
+                "mod-contacts"
+            ],
+            "path": "/uppleva-gora/idrott-motion-och-friluftsliv/simhall-och-friluftsbad/karlsrobadet/fri-entre-till-karlsrobadets-utebad-under-sommarlovet/",
+            "reference": "https://eslov.se/uppleva-gora/idrott-motion-och-friluftsliv/simhall-och-friluftsbad/karlsrobadet/fri-entre-till-karlsrobadets-utebad-under-sommarlovet/",
+            "target": "https://eslov-se-new.ddev.site/uppleva-gora/idrott-motion-och-friluftsliv/simhall-och-friluftsbad/karlsrobadet/fri-entre-till-karlsrobadets-utebad-under-sommarlovet/",
+            "notes": "mod-contacts beside hero"
+        },
+        {
+            "id": "auto-1-572014",
+            "label": "Miljögiftkonferens i Eslöv – nu är vi tillbaka",
+            "blog_id": 1,
+            "post_id": 572014,
+            "tags": [
+                "module",
+                "mod-section-split"
+            ],
+            "path": "/bygga-bo-miljo/miljo-energi-och-klimat/miljo-och-halsa/miljogiftkonferens-i-eslov-3-december-2026/",
+            "reference": "https://eslov.se/bygga-bo-miljo/miljo-energi-och-klimat/miljo-och-halsa/miljogiftkonferens-i-eslov-3-december-2026/",
+            "target": "https://eslov-se-new.ddev.site/bygga-bo-miljo/miljo-energi-och-klimat/miljo-och-halsa/miljogiftkonferens-i-eslov-3-december-2026/",
+            "notes": "mod-section-split campaign layout"
+        },
+        {
+            "id": "auto-1-582279",
+            "label": "Giftfri vardag",
+            "blog_id": 1,
+            "post_id": 582279,
+            "tags": [
+                "module",
+                "mod-section-card"
+            ],
+            "path": "/kampanjer/miljo-natur-och-klimat/bo-och-verka/giftfri-vardag/",
+            "reference": "https://eslov.se/kampanjer/miljo-natur-och-klimat/bo-och-verka/giftfri-vardag/",
+            "target": "https://eslov-se-new.ddev.site/kampanjer/miljo-natur-och-klimat/bo-och-verka/giftfri-vardag/",
+            "notes": "mod-section-card band"
+        },
+        {
+            "id": "auto-1-97012",
+            "label": "Landsbygdsutveckling",
+            "blog_id": 1,
+            "post_id": 97012,
+            "tags": [
+                "module",
+                "mod-timeline"
+            ],
+            "path": "/kommun-politik/politik-och-demokrati/landsbygdsutveckling/",
+            "reference": "https://eslov.se/kommun-politik/politik-och-demokrati/landsbygdsutveckling/",
+            "target": "https://eslov-se-new.ddev.site/kommun-politik/politik-och-demokrati/landsbygdsutveckling/",
+            "notes": "mod-timeline"
+        },
+        {
+            "id": "auto-1-526816",
+            "label": "Avgifter och regler",
+            "blog_id": 1,
+            "post_id": 526816,
+            "tags": [
+                "module",
+                "mod-inlaylist"
+            ],
+            "path": "/omsorg-stod/ekonomi-och-pengar/avgifter-och-regler/",
+            "reference": "https://eslov.se/omsorg-stod/ekonomi-och-pengar/avgifter-och-regler/",
+            "target": "https://eslov-se-new.ddev.site/omsorg-stod/ekonomi-och-pengar/avgifter-och-regler/",
+            "notes": "mod-inlaylist accordion"
+        },
+        {
+            "id": "auto-1-239095",
+            "label": "Kurslitteratur",
+            "blog_id": 1,
+            "post_id": 239095,
+            "tags": [
+                "module",
+                "mod-table"
+            ],
+            "path": "/utbildning-barnomsorg/vuxenutbildning-yh/for-dig-som-elev/kurslitteratur/",
+            "reference": "https://eslov.se/utbildning-barnomsorg/vuxenutbildning-yh/for-dig-som-elev/kurslitteratur/",
+            "target": "https://eslov-se-new.ddev.site/utbildning-barnomsorg/vuxenutbildning-yh/for-dig-som-elev/kurslitteratur/",
+            "notes": "mod-table"
+        },
+        {
+            "id": "auto-1-219737",
+            "label": "Gyaskogen",
+            "blog_id": 1,
+            "post_id": 219737,
+            "tags": [
+                "module",
+                "mod-fileslist"
+            ],
+            "path": "/uppleva-gora/idrott-motion-och-friluftsliv/friluftsliv-och-motion/naturreservat-och-naturomraden/gyaskogen/",
+            "reference": "https://eslov.se/uppleva-gora/idrott-motion-och-friluftsliv/friluftsliv-och-motion/naturreservat-och-naturomraden/gyaskogen/",
+            "target": "https://eslov-se-new.ddev.site/uppleva-gora/idrott-motion-och-friluftsliv/friluftsliv-och-motion/naturreservat-och-naturomraden/gyaskogen/",
+            "notes": "mod-fileslist downloads"
+        },
+        {
+            "id": "auto-1-550640",
+            "label": "Behöver jag bygglov?",
+            "blog_id": 1,
+            "post_id": 550640,
+            "tags": [
+                "module",
+                "mod-notice"
+            ],
+            "path": "/bygga-bo-miljo/bygga-nytt-andra-eller-riva/behover-jag-bygglov/",
+            "reference": "https://eslov.se/bygga-bo-miljo/bygga-nytt-andra-eller-riva/behover-jag-bygglov/",
+            "target": "https://eslov-se-new.ddev.site/bygga-bo-miljo/bygga-nytt-andra-eller-riva/behover-jag-bygglov/",
+            "notes": "mod-notice callout"
+        },
+        {
+            "id": "auto-1-535305",
+            "label": "Fastighetsägarens ansvar vid extremt väder",
+            "blog_id": 1,
+            "post_id": 535305,
+            "tags": [
+                "module",
+                "mod-iframe"
+            ],
+            "path": "/omsorg-stod/trygg-och-saker/din-krisberedskap/fastighetsagarens-ansvar-vid-extremt-vader/",
+            "reference": "https://eslov.se/omsorg-stod/trygg-och-saker/din-krisberedskap/fastighetsagarens-ansvar-vid-extremt-vader/",
+            "target": "https://eslov-se-new.ddev.site/omsorg-stod/trygg-och-saker/din-krisberedskap/fastighetsagarens-ansvar-vid-extremt-vader/",
+            "notes": "mod-iframe embed"
+        },
+        {
+            "id": "auto-1-303521",
+            "label": "Frågor och svar om avvecklingen av Fridasroskolan",
+            "blog_id": 1,
+            "post_id": 303521,
+            "tags": [
+                "module",
+                "mod-form"
+            ],
+            "path": "/utbildning-barnomsorg/grundskola/grundskolor/i-eslovs-tatort/fridasroskolan/fragor-och-svar-om-avvecklingen-av-fridasroskolan/",
+            "reference": "https://eslov.se/utbildning-barnomsorg/grundskola/grundskolor/i-eslovs-tatort/fridasroskolan/fragor-och-svar-om-avvecklingen-av-fridasroskolan/",
+            "target": "https://eslov-se-new.ddev.site/utbildning-barnomsorg/grundskola/grundskolor/i-eslovs-tatort/fridasroskolan/fragor-och-svar-om-avvecklingen-av-fridasroskolan/",
+            "notes": "mod-form"
+        },
+        {
+            "id": "auto-1-101790",
+            "label": "Ung kultur i Eslöv",
+            "blog_id": 1,
+            "post_id": 101790,
+            "tags": [
+                "module",
+                "mod-event"
+            ],
+            "path": "/uppleva-gora/kultur/ung-kultur-i-eslov/",
+            "reference": "https://eslov.se/uppleva-gora/kultur/ung-kultur-i-eslov/",
+            "target": "https://eslov-se-new.ddev.site/uppleva-gora/kultur/ung-kultur-i-eslov/",
+            "notes": "mod-event listing block on page"
+        },
+        {
+            "id": "auto-1-575482",
+            "label": "Kolonilotter",
+            "blog_id": 1,
+            "post_id": 575482,
+            "tags": [
+                "module",
+                "mod-text"
+            ],
+            "path": "/bygga-bo-miljo/bostader-och-boende/kolonilotter/",
+            "reference": "https://eslov.se/bygga-bo-miljo/bostader-och-boende/kolonilotter/",
+            "target": "https://eslov-se-new.ddev.site/bygga-bo-miljo/bostader-och-boende/kolonilotter/",
+            "notes": "mod-text in sidebar"
+        },
+        {
+            "id": "auto-1-540450",
+            "label": "Undersköterska på tre olika sätt",
+            "blog_id": 1,
+            "post_id": 540450,
+            "tags": [
+                "module",
+                "mod-image"
+            ],
+            "path": "/utbildning-barnomsorg/vuxenutbildning-yh/vara-utbildningar/yrkesutbildning/underskoterska/",
+            "reference": "https://eslov.se/utbildning-barnomsorg/vuxenutbildning-yh/vara-utbildningar/yrkesutbildning/underskoterska/",
+            "target": "https://eslov-se-new.ddev.site/utbildning-barnomsorg/vuxenutbildning-yh/vara-utbildningar/yrkesutbildning/underskoterska/",
+            "notes": "mod-image"
+        },
+        {
+            "id": "main-nyheter-archive",
+            "label": "News archive",
+            "blog_id": 1,
+            "tags": [
+                "cpt",
+                "archive",
+                "nyheter"
+            ],
+            "path": "/nyheter/",
+            "reference": "https://eslov.se/nyheter/",
+            "target": "https://eslov-se-new.ddev.site/nyheter/",
+            "notes": "CPT archive template: nyheter"
+        },
+        {
+            "id": "main-event-archive",
+            "label": "Events archive (main site)",
+            "blog_id": 1,
+            "tags": [
+                "cpt",
+                "archive",
+                "event"
+            ],
+            "path": "/event/",
+            "reference": "https://eslov.se/event/",
+            "target": "https://eslov-se-new.ddev.site/event/",
+            "notes": "CPT archive template: event"
+        },
+        {
+            "id": "auto-1-197573",
+            "label": "News single with amne taglist",
+            "blog_id": 1,
+            "post_id": 197573,
+            "tags": [
+                "cpt",
+                "single",
+                "shim"
+            ],
+            "path": "/nyheter/eslovs-skolkok-hor-till-landets-basta/",
+            "reference": "https://eslov.se/nyheter/eslovs-skolkok-hor-till-landets-basta/",
+            "target": "https://eslov-se-new.ddev.site/nyheter/eslovs-skolkok-hor-till-landets-basta/",
+            "notes": "TaxonomyTaglist shim"
+        },
+        {
+            "id": "auto-1-591163",
+            "label": "Event single",
+            "blog_id": 1,
+            "post_id": 591163,
+            "tags": [
+                "cpt",
+                "single",
+                "event"
+            ],
+            "path": "/event/eslovs-leksaksmuseum-firar-15-arsjubileum/",
+            "reference": "https://eslov.se/event/eslovs-leksaksmuseum-firar-15-arsjubileum/",
+            "target": "https://eslov-se-new.ddev.site/event/eslovs-leksaksmuseum-firar-15-arsjubileum/",
+            "notes": "Singular schema template: event"
+        },
+        {
+            "id": "auto-1-591166",
+            "label": "Job-listing single",
+            "blog_id": 1,
+            "post_id": 591166,
+            "tags": [
+                "cpt",
+                "single",
+                "job-listing"
+            ],
+            "path": "/?p=591166",
+            "reference": "https://eslov.se/?p=591166",
+            "target": "https://eslov-se-new.ddev.site/?p=591166",
+            "notes": "Singular schema template: job-listing"
+        },
+        {
+            "id": "sub3-home",
+            "label": "Subsite home: Medborgarhuset, Eslövs kommun",
+            "blog_id": 3,
+            "tags": [
+                "subsite",
+                "layout"
+            ],
+            "path": "/",
+            "reference": "https://medborgarhuset.eslov.se/",
+            "target": "https://medborgarhuset.eslov-se-new.ddev.site/",
+            "notes": "Subsite homepage tokens/header/footer"
+        },
+        {
+            "id": "sub3-posts",
+            "label": "Medborgarhuset, Eslövs kommun — mod-posts",
+            "blog_id": 3,
+            "post_id": 1683,
+            "tags": [
+                "subsite",
+                "module",
+                "mod-posts"
+            ],
+            "path": "/arrangemang/manadens-konst/",
+            "reference": "https://medborgarhuset.eslov.se/arrangemang/manadens-konst/",
+            "target": "https://medborgarhuset.eslov-se-new.ddev.site/arrangemang/manadens-konst/",
+            "notes": "Subsite example for mod-posts"
+        },
+        {
+            "id": "sub3-navigation",
+            "label": "Medborgarhuset, Eslövs kommun — mod-navigation",
+            "blog_id": 3,
+            "post_id": 1598,
+            "tags": [
+                "subsite",
+                "module",
+                "mod-navigation"
+            ],
+            "path": "/arkitekturen/byggnadsminne-och-aterstallande/",
+            "reference": "https://medborgarhuset.eslov.se/arkitekturen/byggnadsminne-och-aterstallande/",
+            "target": "https://medborgarhuset.eslov-se-new.ddev.site/arkitekturen/byggnadsminne-och-aterstallande/",
+            "notes": "Subsite example for mod-navigation"
+        },
+        {
+            "id": "sub3-hero",
+            "label": "Medborgarhuset, Eslövs kommun — mod-hero",
+            "blog_id": 3,
+            "post_id": 264,
+            "tags": [
+                "subsite",
+                "module",
+                "mod-hero"
+            ],
+            "path": "/arkitekturen/byggnaden-och-arkitekten/",
+            "reference": "https://medborgarhuset.eslov.se/arkitekturen/byggnaden-och-arkitekten/",
+            "target": "https://medborgarhuset.eslov-se-new.ddev.site/arkitekturen/byggnaden-och-arkitekten/",
+            "notes": "Subsite example for mod-hero"
+        },
+        {
+            "id": "sub3-event",
+            "label": "Medborgarhuset, Eslövs kommun — mod-event",
+            "blog_id": 3,
+            "post_id": 18,
+            "tags": [
+                "subsite",
+                "module",
+                "mod-event"
+            ],
+            "path": "/arrangemang/",
+            "reference": "https://medborgarhuset.eslov.se/arrangemang/",
+            "target": "https://medborgarhuset.eslov-se-new.ddev.site/arrangemang/",
+            "notes": "Subsite example for mod-event"
+        },
+        {
+            "id": "sub3-events",
+            "label": "Medborgarhuset, Eslövs kommun — events archive",
+            "blog_id": 3,
+            "tags": [
+                "subsite",
+                "cpt",
+                "event"
+            ],
+            "path": "/event/",
+            "reference": "https://medborgarhuset.eslov.se/event/",
+            "target": "https://medborgarhuset.eslov-se-new.ddev.site/event/",
+            "notes": "Subsite event archive"
+        },
+        {
+            "id": "sub4-home",
+            "label": "Subsite home: Företag, Eslövs kommun",
+            "blog_id": 4,
+            "tags": [
+                "subsite",
+                "layout"
+            ],
+            "path": "/",
+            "reference": "https://foretag.eslov.se/",
+            "target": "https://foretag.eslov-se-new.ddev.site/",
+            "notes": "Subsite homepage tokens/header/footer"
+        },
+        {
+            "id": "sub4-posts",
+            "label": "Företag, Eslövs kommun — mod-posts",
+            "blog_id": 4,
+            "post_id": 1128,
+            "tags": [
+                "subsite",
+                "module",
+                "mod-posts"
+            ],
+            "path": "/driva-utveckla/starta/foretagslots-och-radgivning/",
+            "reference": "https://foretag.eslov.se/driva-utveckla/starta/foretagslots-och-radgivning/",
+            "target": "https://foretag.eslov-se-new.ddev.site/driva-utveckla/starta/foretagslots-och-radgivning/",
+            "notes": "Subsite example for mod-posts"
+        },
+        {
+            "id": "sub4-navigation",
+            "label": "Företag, Eslövs kommun — mod-navigation",
+            "blog_id": 4,
+            "post_id": 9532,
+            "tags": [
+                "subsite",
+                "module",
+                "mod-navigation"
+            ],
+            "path": "/driva-utveckla/starta/",
+            "reference": "https://foretag.eslov.se/driva-utveckla/starta/",
+            "target": "https://foretag.eslov-se-new.ddev.site/driva-utveckla/starta/",
+            "notes": "Subsite example for mod-navigation"
+        },
+        {
+            "id": "sub4-hero",
+            "label": "Företag, Eslövs kommun — mod-hero",
+            "blog_id": 4,
+            "post_id": 648,
+            "tags": [
+                "subsite",
+                "module",
+                "mod-hero"
+            ],
+            "path": "/naringslivsdagar/",
+            "reference": "https://foretag.eslov.se/naringslivsdagar/",
+            "target": "https://foretag.eslov-se-new.ddev.site/naringslivsdagar/",
+            "notes": "Subsite example for mod-hero"
+        },
+        {
+            "id": "sub4-event",
+            "label": "Företag, Eslövs kommun — mod-event",
+            "blog_id": 4,
+            "post_id": 1535,
+            "tags": [
+                "subsite",
+                "module",
+                "mod-event"
+            ],
+            "path": "/om-naringslivet/foretagande-i-eslov/foretagartraffar/naringslivsfrukostar/",
+            "reference": "https://foretag.eslov.se/om-naringslivet/foretagande-i-eslov/foretagartraffar/naringslivsfrukostar/",
+            "target": "https://foretag.eslov-se-new.ddev.site/om-naringslivet/foretagande-i-eslov/foretagartraffar/naringslivsfrukostar/",
+            "notes": "Subsite example for mod-event"
+        },
+        {
+            "id": "sub4-events",
+            "label": "Företag, Eslövs kommun — events archive",
+            "blog_id": 4,
+            "tags": [
+                "subsite",
+                "cpt",
+                "event"
+            ],
+            "path": "/event/",
+            "reference": "https://foretag.eslov.se/event/",
+            "target": "https://foretag.eslov-se-new.ddev.site/event/",
+            "notes": "Subsite event archive"
+        },
+        {
+            "id": "sub7-home",
+            "label": "Subsite home: Program för offentlig miljö",
+            "blog_id": 7,
+            "tags": [
+                "subsite",
+                "layout"
+            ],
+            "path": "/",
+            "reference": "https://programforoffentligmiljo.eslov.se/",
+            "target": "https://programforoffentligmiljo.eslov-se-new.ddev.site/",
+            "notes": "Subsite homepage tokens/header/footer"
+        },
+        {
+            "id": "sub7-posts",
+            "label": "Program för offentlig miljö — mod-posts",
+            "blog_id": 7,
+            "post_id": 342,
+            "tags": [
+                "subsite",
+                "module",
+                "mod-posts"
+            ],
+            "path": "/material-och-utrustning/utrustning/",
+            "reference": "https://programforoffentligmiljo.eslov.se/material-och-utrustning/utrustning/",
+            "target": "https://programforoffentligmiljo.eslov-se-new.ddev.site/material-och-utrustning/utrustning/",
+            "notes": "Subsite example for mod-posts"
+        },
+        {
+            "id": "sub7-navigation",
+            "label": "Program för offentlig miljö — mod-navigation",
+            "blog_id": 7,
+            "post_id": 629,
+            "tags": [
+                "subsite",
+                "module",
+                "mod-navigation"
+            ],
+            "path": "/generella-foreskrifter/val-av-belysningsarmatur/",
+            "reference": "https://programforoffentligmiljo.eslov.se/generella-foreskrifter/val-av-belysningsarmatur/",
+            "target": "https://programforoffentligmiljo.eslov-se-new.ddev.site/generella-foreskrifter/val-av-belysningsarmatur/",
+            "notes": "Subsite example for mod-navigation"
+        },
+        {
+            "id": "sub7-hero",
+            "label": "Program för offentlig miljö — mod-hero",
+            "blog_id": 7,
+            "post_id": 277,
+            "tags": [
+                "subsite",
+                "module",
+                "mod-hero"
+            ],
+            "path": "/generella-foreskrifter/",
+            "reference": "https://programforoffentligmiljo.eslov.se/generella-foreskrifter/",
+            "target": "https://programforoffentligmiljo.eslov-se-new.ddev.site/generella-foreskrifter/",
+            "notes": "Subsite example for mod-hero"
+        },
+        {
+            "id": "sub7-events",
+            "label": "Program för offentlig miljö — events archive",
+            "blog_id": 7,
+            "tags": [
+                "subsite",
+                "cpt",
+                "event"
+            ],
+            "path": "/event/",
+            "reference": "https://programforoffentligmiljo.eslov.se/event/",
+            "target": "https://programforoffentligmiljo.eslov-se-new.ddev.site/event/",
+            "notes": "Subsite event archive"
+        },
+        {
+            "id": "sub8-home",
+            "label": "Subsite home: Varumärkesmanual",
+            "blog_id": 8,
+            "tags": [
+                "subsite",
+                "layout"
+            ],
+            "path": "/",
+            "reference": "https://varumarkesmanual.eslov.se/",
+            "target": "https://varumarkesmanual.eslov-se-new.ddev.site/",
+            "notes": "Subsite homepage tokens/header/footer"
+        },
+        {
+            "id": "sub8-posts",
+            "label": "Varumärkesmanual — mod-posts",
+            "blog_id": 8,
+            "post_id": 500,
+            "tags": [
+                "subsite",
+                "module",
+                "mod-posts"
+            ],
+            "path": "/mallar-for-word-och-powerpoint/mallar-i-powerpoint/",
+            "reference": "https://varumarkesmanual.eslov.se/mallar-for-word-och-powerpoint/mallar-i-powerpoint/",
+            "target": "https://varumarkesmanual.eslov-se-new.ddev.site/mallar-for-word-och-powerpoint/mallar-i-powerpoint/",
+            "notes": "Subsite example for mod-posts"
+        },
+        {
+            "id": "sub8-events",
+            "label": "Varumärkesmanual — events archive",
+            "blog_id": 8,
+            "tags": [
+                "subsite",
+                "cpt",
+                "event"
+            ],
+            "path": "/event/",
+            "reference": "https://varumarkesmanual.eslov.se/event/",
+            "target": "https://varumarkesmanual.eslov-se-new.ddev.site/event/",
+            "notes": "Subsite event archive"
+        },
+        {
+            "id": "sub10-home",
+            "label": "Subsite home: Stora torg",
+            "blog_id": 10,
+            "tags": [
+                "subsite",
+                "layout"
+            ],
+            "path": "/",
+            "reference": "https://storatorg.eslov.se/",
+            "target": "https://storatorg.eslov-se-new.ddev.site/",
+            "notes": "Subsite homepage tokens/header/footer"
+        },
+        {
+            "id": "sub10-events",
+            "label": "Stora torg — events archive",
+            "blog_id": 10,
+            "tags": [
+                "subsite",
+                "cpt",
+                "event"
+            ],
+            "path": "/event/",
+            "reference": "https://storatorg.eslov.se/event/",
+            "target": "https://storatorg.eslov-se-new.ddev.site/event/",
+            "notes": "Subsite event archive"
+        },
+        {
+            "id": "sub11-home",
+            "label": "Subsite home: Sommar i Eslöv",
+            "blog_id": 11,
+            "tags": [
+                "subsite",
+                "layout"
+            ],
+            "path": "/",
+            "reference": "https://sommarieslov.eslov.se/",
+            "target": "https://sommarieslov.eslov-se-new.ddev.site/",
+            "notes": "Subsite homepage tokens/header/footer"
+        },
+        {
+            "id": "sub11-posts",
+            "label": "Sommar i Eslöv — mod-posts",
+            "blog_id": 11,
+            "post_id": 318,
+            "tags": [
+                "subsite",
+                "module",
+                "mod-posts"
+            ],
+            "path": "/utflyktsmal/",
+            "reference": "https://sommarieslov.eslov.se/utflyktsmal/",
+            "target": "https://sommarieslov.eslov-se-new.ddev.site/utflyktsmal/",
+            "notes": "Subsite example for mod-posts"
+        },
+        {
+            "id": "sub11-events",
+            "label": "Sommar i Eslöv — events archive",
+            "blog_id": 11,
+            "tags": [
+                "subsite",
+                "cpt",
+                "event"
+            ],
+            "path": "/event/",
+            "reference": "https://sommarieslov.eslov.se/event/",
+            "target": "https://sommarieslov.eslov-se-new.ddev.site/event/",
+            "notes": "Subsite event archive"
+        },
+        {
+            "id": "sub12-home",
+            "label": "Subsite home: Eslövs kommuns historia",
+            "blog_id": 12,
+            "tags": [
+                "subsite",
+                "layout"
+            ],
+            "path": "/",
+            "reference": "https://historia.eslov.se/",
+            "target": "https://historia.eslov-se-new.ddev.site/",
+            "notes": "Subsite homepage tokens/header/footer"
+        },
+        {
+            "id": "sub12-posts",
+            "label": "Eslövs kommuns historia — mod-posts",
+            "blog_id": 12,
+            "post_id": 6836,
+            "tags": [
+                "subsite",
+                "module",
+                "mod-posts"
+            ],
+            "path": "/i-eslov/platser/eslovs-flygfalt/",
+            "reference": "https://historia.eslov.se/i-eslov/platser/eslovs-flygfalt/",
+            "target": "https://historia.eslov-se-new.ddev.site/i-eslov/platser/eslovs-flygfalt/",
+            "notes": "Subsite example for mod-posts"
+        },
+        {
+            "id": "sub12-navigation",
+            "label": "Eslövs kommuns historia — mod-navigation",
+            "blog_id": 12,
+            "post_id": 8198,
+            "tags": [
+                "subsite",
+                "module",
+                "mod-navigation"
+            ],
+            "path": "/runt-eslov/marieholm/i-marieholm/foretagande-i-marieholm/",
+            "reference": "https://historia.eslov.se/runt-eslov/marieholm/i-marieholm/foretagande-i-marieholm/",
+            "target": "https://historia.eslov-se-new.ddev.site/runt-eslov/marieholm/i-marieholm/foretagande-i-marieholm/",
+            "notes": "Subsite example for mod-navigation"
+        },
+        {
+            "id": "sub12-events",
+            "label": "Eslövs kommuns historia — events archive",
+            "blog_id": 12,
+            "tags": [
+                "subsite",
+                "cpt",
+                "event"
+            ],
+            "path": "/event/",
+            "reference": "https://historia.eslov.se/event/",
+            "target": "https://historia.eslov-se-new.ddev.site/event/",
+            "notes": "Subsite event archive"
+        },
+        {
+            "id": "sub13-home",
+            "label": "Subsite home: Eslövsfesten",
+            "blog_id": 13,
+            "tags": [
+                "subsite",
+                "layout"
+            ],
+            "path": "/",
+            "reference": "https://eslovsfesten.eslov.se/",
+            "target": "https://eslovsfesten.eslov-se-new.ddev.site/",
+            "notes": "Subsite homepage tokens/header/footer"
+        },
+        {
+            "id": "sub13-posts",
+            "label": "Eslövsfesten — mod-posts",
+            "blog_id": 13,
+            "post_id": 3691,
+            "tags": [
+                "subsite",
+                "module",
+                "mod-posts"
+            ],
+            "path": "/program/",
+            "reference": "https://eslovsfesten.eslov.se/program/",
+            "target": "https://eslovsfesten.eslov-se-new.ddev.site/program/",
+            "notes": "Subsite example for mod-posts"
+        },
+        {
+            "id": "sub13-events",
+            "label": "Eslövsfesten — events archive",
+            "blog_id": 13,
+            "tags": [
+                "subsite",
+                "cpt",
+                "event"
+            ],
+            "path": "/event/",
+            "reference": "https://eslovsfesten.eslov.se/event/",
+            "target": "https://eslovsfesten.eslov-se-new.ddev.site/event/",
+            "notes": "Subsite event archive"
+        },
+        {
+            "id": "sub14-home",
+            "label": "Subsite home: Valarbetare 2022",
+            "blog_id": 14,
+            "tags": [
+                "subsite",
+                "layout"
+            ],
+            "path": "/",
+            "reference": "https://valarbetare.eslov.se/",
+            "target": "https://valarbetare.eslov-se-new.ddev.site/",
+            "notes": "Subsite homepage tokens/header/footer"
+        },
+        {
+            "id": "sub14-events",
+            "label": "Valarbetare 2022 — events archive",
+            "blog_id": 14,
+            "tags": [
+                "subsite",
+                "cpt",
+                "event"
+            ],
+            "path": "/event/",
+            "reference": "https://valarbetare.eslov.se/event/",
+            "target": "https://valarbetare.eslov-se-new.ddev.site/event/",
+            "notes": "Subsite event archive"
+        },
+        {
+            "id": "sub15-home",
+            "label": "Subsite home: Utveckla Eslöv",
+            "blog_id": 15,
+            "tags": [
+                "subsite",
+                "layout"
+            ],
+            "path": "/",
+            "reference": "https://utveckla.eslov.se/",
+            "target": "https://utveckla.eslov-se-new.ddev.site/",
+            "notes": "Subsite homepage tokens/header/footer"
+        },
+        {
+            "id": "sub15-posts",
+            "label": "Utveckla Eslöv — mod-posts",
+            "blog_id": 15,
+            "post_id": 8920,
+            "tags": [
+                "subsite",
+                "module",
+                "mod-posts"
+            ],
+            "path": "/landsbygdsutveckling/",
+            "reference": "https://utveckla.eslov.se/landsbygdsutveckling/",
+            "target": "https://utveckla.eslov-se-new.ddev.site/landsbygdsutveckling/",
+            "notes": "Subsite example for mod-posts"
+        },
+        {
+            "id": "sub15-hero",
+            "label": "Utveckla Eslöv — mod-hero",
+            "blog_id": 15,
+            "post_id": 2061,
+            "tags": [
+                "subsite",
+                "module",
+                "mod-hero"
+            ],
+            "path": "/for-er-som-bygger-och-utvecklar/",
+            "reference": "https://utveckla.eslov.se/for-er-som-bygger-och-utvecklar/",
+            "target": "https://utveckla.eslov-se-new.ddev.site/for-er-som-bygger-och-utvecklar/",
+            "notes": "Subsite example for mod-hero"
+        },
+        {
+            "id": "sub15-events",
+            "label": "Utveckla Eslöv — events archive",
+            "blog_id": 15,
+            "tags": [
+                "subsite",
+                "cpt",
+                "event"
+            ],
+            "path": "/event/",
+            "reference": "https://utveckla.eslov.se/event/",
+            "target": "https://utveckla.eslov-se-new.ddev.site/event/",
+            "notes": "Subsite event archive"
+        },
+        {
+            "id": "sub16-home",
+            "label": "Subsite home: Eslöv+",
+            "blog_id": 16,
+            "tags": [
+                "subsite",
+                "layout"
+            ],
+            "path": "/",
+            "reference": "https://plus.eslov.se/",
+            "target": "https://plus.eslov-se-new.ddev.site/",
+            "notes": "Subsite homepage tokens/header/footer"
+        },
+        {
+            "id": "sub16-posts",
+            "label": "Eslöv+ — mod-posts",
+            "blog_id": 16,
+            "post_id": 939,
+            "tags": [
+                "subsite",
+                "module",
+                "mod-posts"
+            ],
+            "path": "/for-arrangorer/",
+            "reference": "https://plus.eslov.se/for-arrangorer/",
+            "target": "https://plus.eslov-se-new.ddev.site/for-arrangorer/",
+            "notes": "Subsite example for mod-posts"
+        },
+        {
+            "id": "sub16-hero",
+            "label": "Eslöv+ — mod-hero",
+            "blog_id": 16,
+            "post_id": 2321,
+            "tags": [
+                "subsite",
+                "module",
+                "mod-hero"
+            ],
+            "path": "/detta-hander-pa-lovet/",
+            "reference": "https://plus.eslov.se/detta-hander-pa-lovet/",
+            "target": "https://plus.eslov-se-new.ddev.site/detta-hander-pa-lovet/",
+            "notes": "Subsite example for mod-hero"
+        },
+        {
+            "id": "sub16-events",
+            "label": "Eslöv+ — events archive",
+            "blog_id": 16,
+            "tags": [
+                "subsite",
+                "cpt",
+                "event"
+            ],
+            "path": "/event/",
+            "reference": "https://plus.eslov.se/event/",
+            "target": "https://plus.eslov-se-new.ddev.site/event/",
+            "notes": "Subsite event archive"
+        }
+    ]
+}

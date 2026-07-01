@@ -1,4 +1,6 @@
 <?php
+// wp-config-ddev.php not needed
+
 /**
  * The base configuration for WordPress
  *
@@ -18,7 +20,7 @@
  * @package WordPress
  */
 
-if( !defined('ABSPATH') ) {
+if (!defined('ABSPATH')) {
     // Prevent direct access to this file, as it should only be included by index.php
     // Set header to 403 Forbidden and exit
     header('HTTP/1.0 403 Forbidden');
@@ -63,10 +65,10 @@ foreach ($configFiles as $configFile) {
 /**
  * Autoload Vendor files or display install instructions.
  */
-if(file_exists(__DIR__ . '/vendor/autoload.php')) {
+if (file_exists(__DIR__ . '/vendor/autoload.php')) {
     require_once __DIR__ . '/vendor/autoload.php';
 } else {
-    die(file_get_contents(__DIR__ . '/install.html'));  
+    die(file_get_contents(__DIR__ . '/install.html'));
 }
 
 /** Sets up WordPress vars and included files. */

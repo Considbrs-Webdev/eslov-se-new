@@ -1,0 +1,228 @@
+{
+  "runId": "20260629-064508",
+  "generatedAt": "2026-06-29T08:50:00+02:00",
+  "reportPath": "output/20260629-064508/index.html",
+  "instructions": "Review index.html; update fixClass and status when acting on an item.",
+  "items": [
+    {
+      "id": "home-desktop",
+      "pageId": "home",
+      "label": "Homepage",
+      "viewport": "desktop",
+      "mismatchPercent": 35.64,
+      "matrixRefs": ["4", "4b", "9"],
+      "fixClass": "investigate",
+      "action": "Review mod-navigation grid + footer bar; height delta suggests extra module block locally.",
+      "status": "pending"
+    },
+    {
+      "id": "home-mobile",
+      "pageId": "home",
+      "label": "Homepage",
+      "viewport": "mobile",
+      "mismatchPercent": 44.93,
+      "matrixRefs": ["4", "4b", "9"],
+      "fixClass": "investigate",
+      "action": "Same as desktop; mobile drawer/header spacing.",
+      "status": "pending"
+    },
+    {
+      "id": "section-top-sidebar-desktop",
+      "pageId": "section-top-sidebar",
+      "label": "Section hub — top-sidebar buttons",
+      "viewport": "desktop",
+      "mismatchPercent": 21.09,
+      "matrixRefs": ["5", "6", "16"],
+      "fixClass": "config",
+      "action": "Rows 6/16 marked done; spot-check button fill/radius and secondary band.",
+      "status": "accepted"
+    },
+    {
+      "id": "section-top-sidebar-mobile",
+      "pageId": "section-top-sidebar",
+      "label": "Section hub — top-sidebar buttons",
+      "viewport": "mobile",
+      "mismatchPercent": 43.08,
+      "matrixRefs": ["5", "6", "16"],
+      "fixClass": "config",
+      "action": "Mobile layout length differs; verify module order not content regression.",
+      "status": "pending"
+    },
+    {
+      "id": "section-child-pills-desktop",
+      "pageId": "section-child-pills",
+      "label": "Section hub — child page pills",
+      "viewport": "desktop",
+      "mismatchPercent": 21.44,
+      "matrixRefs": ["5"],
+      "fixClass": "shim",
+      "action": "Verified `eslov-child-page-buttons` renders; residual diff from global header/footer and pill radius.",
+      "status": "done"
+    },
+    {
+      "id": "section-child-pills-mobile",
+      "pageId": "section-child-pills",
+      "label": "Section hub — child page pills",
+      "viewport": "mobile",
+      "mismatchPercent": 20.22,
+      "matrixRefs": ["5"],
+      "fixClass": "shim",
+      "action": "Same as desktop — feature present.",
+      "status": "done"
+    },
+    {
+      "id": "section-cards-desktop",
+      "pageId": "section-cards",
+      "label": "Section hub — mod-navigation cards",
+      "viewport": "desktop",
+      "mismatchPercent": 25.85,
+      "matrixRefs": ["4"],
+      "fixClass": "config",
+      "action": "Card grid spacing/icons — row 4 done; review if icons missing.",
+      "status": "pending"
+    },
+    {
+      "id": "section-cards-mobile",
+      "pageId": "section-cards",
+      "label": "Section hub — mod-navigation cards",
+      "viewport": "mobile",
+      "mismatchPercent": 31.09,
+      "matrixRefs": ["4"],
+      "fixClass": "config",
+      "action": "Mobile card stack parity.",
+      "status": "pending"
+    },
+    {
+      "id": "tree-highlighted-desktop",
+      "pageId": "tree-highlighted",
+      "label": "Tree highlighted navigation",
+      "viewport": "desktop",
+      "mismatchPercent": 11.36,
+      "matrixRefs": ["17"],
+      "fixClass": "config",
+      "action": "Lowest desktop diff — row 17 done; acceptable baseline.",
+      "status": "accepted"
+    },
+    {
+      "id": "tree-highlighted-mobile",
+      "pageId": "tree-highlighted",
+      "label": "Tree highlighted navigation",
+      "viewport": "mobile",
+      "mismatchPercent": 20.76,
+      "matrixRefs": ["17"],
+      "fixClass": "config",
+      "action": "Mobile tree stack — acceptable unless editors report issue.",
+      "status": "accepted"
+    },
+    {
+      "id": "news-archive-desktop",
+      "pageId": "news-archive",
+      "label": "News archive",
+      "viewport": "desktop",
+      "mismatchPercent": 52.08,
+      "matrixRefs": ["7", "8"],
+      "fixClass": "accepted",
+      "action": "Target page ~2× taller — likely different post count/pagination locally vs live prod feed.",
+      "status": "accepted"
+    },
+    {
+      "id": "news-archive-mobile",
+      "pageId": "news-archive",
+      "label": "News archive",
+      "viewport": "mobile",
+      "mismatchPercent": 58.80,
+      "matrixRefs": ["7", "8"],
+      "fixClass": "accepted",
+      "action": "Dynamic archive content — not a layout regression signal.",
+      "status": "accepted"
+    },
+    {
+      "id": "search-desktop",
+      "pageId": "search",
+      "label": "Search results",
+      "viewport": "desktop",
+      "mismatchPercent": 27.48,
+      "matrixRefs": ["9", "12", "15"],
+      "fixClass": "accepted",
+      "action": "Algolia/Typesense not reindexed locally (Phase 4) — result count differs; header search CSS rows 9/12/15 done.",
+      "status": "accepted"
+    },
+    {
+      "id": "search-mobile",
+      "pageId": "search",
+      "label": "Search results",
+      "viewport": "mobile",
+      "mismatchPercent": 45.27,
+      "matrixRefs": ["9", "12", "15"],
+      "fixClass": "accepted",
+      "action": "Same as desktop search.",
+      "status": "accepted"
+    },
+    {
+      "id": "job-listings-desktop",
+      "pageId": "job-listings",
+      "label": "Job listings archive",
+      "viewport": "desktop",
+      "mismatchPercent": 57.73,
+      "matrixRefs": [],
+      "fixClass": "investigate",
+      "action": "Phase 5 page type — check job-listings plugin template after Phase 4 integrations.",
+      "status": "pending"
+    },
+    {
+      "id": "job-listings-mobile",
+      "pageId": "job-listings",
+      "label": "Job listings archive",
+      "viewport": "mobile",
+      "mismatchPercent": 52.46,
+      "matrixRefs": [],
+      "fixClass": "investigate",
+      "action": "Same as desktop job listings.",
+      "status": "pending"
+    },
+    {
+      "id": "events-plus-desktop",
+      "pageId": "events-plus",
+      "label": "Events index (plus subsite)",
+      "viewport": "desktop",
+      "mismatchPercent": 58.72,
+      "matrixRefs": ["13"],
+      "fixClass": "accepted",
+      "action": "Event API may return different upcoming events locally; row 13 padding shim applied.",
+      "status": "accepted"
+    },
+    {
+      "id": "events-plus-mobile",
+      "pageId": "events-plus",
+      "label": "Events index (plus subsite)",
+      "viewport": "mobile",
+      "mismatchPercent": 50.22,
+      "matrixRefs": ["13"],
+      "fixClass": "accepted",
+      "action": "Dynamic event list.",
+      "status": "accepted"
+    },
+    {
+      "id": "mod-posts-subsite-desktop",
+      "pageId": "mod-posts-subsite",
+      "label": "mod-posts cards (subsites)",
+      "viewport": "desktop",
+      "mismatchPercent": 52.41,
+      "matrixRefs": ["2c", "7", "8"],
+      "fixClass": "investigate",
+      "action": "Verify mod-posts card count/filtering on programforoffentligmiljo subsite.",
+      "status": "pending"
+    },
+    {
+      "id": "mod-posts-subsite-mobile",
+      "pageId": "mod-posts-subsite",
+      "label": "mod-posts cards (subsites)",
+      "viewport": "mobile",
+      "mismatchPercent": 46.75,
+      "matrixRefs": ["2c", "7", "8"],
+      "fixClass": "investigate",
+      "action": "Same as desktop subsite mod-posts.",
+      "status": "pending"
+    }
+  ]
+}
