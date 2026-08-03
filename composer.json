@@ -20,7 +20,13 @@
       "php-http/discovery": true
     },
     "optimize-autoloader": true,
-    "process-timeout": 21600
+    "process-timeout": 21600,
+    "audit": {
+      "block-insecure": false
+    },
+    "policy": {
+      "advisories": false
+    }
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
