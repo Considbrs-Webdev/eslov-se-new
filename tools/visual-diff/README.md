@@ -90,7 +90,7 @@ npm run audit-pages   # scans modularity-modules across all subsites
 
 See [`pages-audit.md`](pages-audit.md) for **how each URL was chosen** (module types, layouts, CPT templates, subsites).
 
-**Coverage (current):** 69 URLs × **desktop + mobile** = 138 screenshots per full run. Mobile is included automatically for every page — no separate config.
+**Coverage (current):** 56 active-site URLs × **desktop + mobile** = 112 screenshots per full run. Archived subsites (e.g. varumarkesmanual) are excluded by `npm run audit-pages`.
 
 ### Run subsets (faster)
 
@@ -116,3 +116,40 @@ npm run run:docker -- --pages=sub16-home,sub16-event,sub16-mod-posts
 - Full-page screenshots may differ in height when content length changes — diff crops to the smaller shared area.
 - Search and news pages often have high mismatch from dynamic content; triage as `accepted` or `investigate` unless layout/CSS is wrong.
 - Subsites use `{name}.eslov-se-new.ddev.site` (requires `additional_hostnames: ["*.eslov-se-new"]` in DDEV config).
+
+## Timeouts and speed
+
+**Why captures fail or hang:** Deactivated subsites (`wp_blogs.archived = 1`) — prod URL never loads. Re-run `npm run audit-pages` to refresh the page list. Also: analytics/widgets can stall `networkidle` (default is now `load` instead).
+
+**Default (since 2026-06):** `waitUntil: load` + 2s post-load delay + analytics request blocking. Good enough for layout/CSS diffs.
+
+### If a page still fails
+
+```bash
+# Skip failures, finish the rest, diff what you got
+npm run run:docker -- --pages=sub8-home --fail-fast=false   # default: continue on error
+
+# Retry only failed pages (after fixing DDEV/network)
+npm run run:docker -- --pages=sub8-home --resume --run=20260630-120000
+
+# Target only (half the navigations when iterating locally)
+npm run run:docker -- --side=target --tags=layout,module
+
+# Subset by tag
+npm run run:docker -- --tags=subsite
+npm run run:docker -- --tags=mod-posts,mod-navigation
+
+# Slower page: longer timeout + extra settle time
+npm run run:docker -- --pages=sub8-home --timeout=90000 --delay=3000
+```
+
+### Rough runtime (56 pages)
+
+| Mode | Navigations | Approx time |
+|------|-------------|-------------|
+| Full (both sides, 2 viewports) | ~276 | 8–15 min |
+| `--side=target` only | ~138 | 4–8 min |
+| `--tags=layout,module` (main site) | ~50–80 | 3–5 min |
+| Single page | 2–4 | ~30 s |
+
+For day-to-day migration work, prefer **target-only** + **tag/page filters**, then run a full prod-vs-local pass before sign-off.

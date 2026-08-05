@@ -48,9 +48,11 @@ Pages are **not guessed**. The audit script scans `modularity-modules` post meta
 | `school` archive | auto-picked | School archive |
 | `project` archive | auto-picked | Project archive |
 
-### Subsites (11 networks)
+### Subsites (active only)
 
-Each subsite gets:
+The audit **skips archived, deleted, or spam** blogs (`wp_blogs.archived/deleted/spam`). Deactivated subsites like varumarkesmanual are excluded automatically — they cause capture timeouts against dead prod URLs.
+
+Each **active** subsite gets:
 
 1. **Homepage** — subsite tokens, header/footer, hero
 2. **First page with `mod-posts`** (if any) — card height/filtering on subsites (row #2c)
@@ -59,19 +61,21 @@ Each subsite gets:
 5. **First page with `mod-event`** (if any)
 6. **Event archive** (if CPT exists) — e.g. plus.eslov.se/evenemang/
 
-| Subsite | Domain |
+| Subsite | Status |
 |---------|--------|
-| medborgarhuset | medborgarhuset.eslov.se |
-| foretag | foretag.eslov.se |
-| programforoffentligmiljo | programforoffentligmiljo.eslov.se |
-| varumarkesmanual | varumarkesmanual.eslov.se |
-| storatorg | storatorg.eslov.se |
-| sommarieslov | sommarieslov.eslov.se |
-| historia | historia.eslov.se |
-| eslovsfesten | eslovsfesten.eslov.se |
-| valarbetare | valarbetare.eslov.se |
-| utveckla | utveckla.eslov.se |
-| plus | plus.eslov.se |
+| medborgarhuset | active |
+| foretag | active |
+| programforoffentligmiljo | active |
+| historia | active |
+| utveckla | active |
+| plus | active |
+| varumarkesmanual | archived — skipped |
+| storatorg | archived — skipped |
+| sommarieslov | archived — skipped |
+| eslovsfesten | archived — skipped |
+| valarbetare | archived — skipped |
+
+See `pages-audit.json` → `skipped_subsites` after each audit run.
 
 ### Not yet in set (low volume / investigate separately)
 

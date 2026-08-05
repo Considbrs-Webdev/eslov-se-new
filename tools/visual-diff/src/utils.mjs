@@ -66,6 +66,14 @@ export function filterPages(pages, pageFilter) {
   return pages.filter((page) => ids.has(page.id));
 }
 
+export function filterPagesByTags(pages, tagFilter) {
+  if (!tagFilter) {
+    return pages;
+  }
+  const tags = new Set(tagFilter.split(',').map((tag) => tag.trim()).filter(Boolean));
+  return pages.filter((page) => (page.tags ?? []).some((tag) => tags.has(tag)));
+}
+
 export function percent(part, total) {
   if (total === 0) {
     return 0;

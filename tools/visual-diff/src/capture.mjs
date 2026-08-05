@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { chromium } from 'playwright';
-import { ensureDir, filterPages, loadConfig, slug, timestamp } from './utils.mjs';
+import { ensureDir, filterPages, filterPagesByTags, loadConfig, timestamp } from './utils.mjs';
 
 const COOKIE_DISMISS_SELECTORS = [
   '#CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll',
@@ -9,6 +9,36 @@ const COOKIE_DISMISS_SELECTORS = [
   'button:has-text("Acceptera")',
   'button:has-text("Godkänn")',
 ];
+
+const BLOCKED_URL_PATTERNS = [
+  /google-analytics\.com/i,
+  /googletagmanager\.com/i,
+  /doubleclick\.net/i,
+  /hotjar\.com/i,
+  /clarity\.ms/i,
+  /facebook\.net/i,
+  /connect\.facebook\.net/i,
+  /snap\.licdn\.com/i,
+  /analytics/i,
+];
+
+function shouldBlockUrl(url) {
+  return BLOCKED_URL_PATTERNS.some((pattern) => pattern.test(url));
+}
+
+function mergeDefaults(configDefaults, overrides = {}) {
+  return { ...configDefaults, ...overrides };
+}
+
+async function setupRequestBlocking(context) {
+  await context.route('**/*', (route) => {
+    if (shouldBlockUrl(route.request().url())) {
+      route.abort();
+      return;
+    }
+    route.continue();
+  });
+}
 
 async function dismissOverlays(page) {
   for (const selector of COOKIE_DISMISS_SELECTORS) {
@@ -24,12 +54,32 @@ async function dismissOverlays(page) {
   }
 }
 
+async function gotoWithFallback(page, url, defaults) {
+  const timeout = defaults.navigationTimeoutMs ?? 60000;
+  const strategies = [
+    defaults.waitUntil ?? 'load',
+    'domcontentloaded',
+  ];
+
+  let lastError;
+  for (const waitUntil of strategies) {
+    try {
+      await page.goto(url, { waitUntil, timeout });
+      return waitUntil;
+    } catch (error) {
+      lastError = error;
+      if (waitUntil === 'domcontentloaded') {
+        throw error;
+      }
+    }
+  }
+
+  throw lastError;
+}
+
 async function captureOne(page, url, filePath, viewport, defaults) {
   await page.setViewportSize({ width: viewport.width, height: viewport.height });
-  await page.goto(url, {
-    waitUntil: defaults.waitUntil ?? 'networkidle',
-    timeout: 120000,
-  });
+  const waitUsed = await gotoWithFallback(page, url, defaults);
   await dismissOverlays(page);
   if (defaults.postLoadDelayMs) {
     await page.waitForTimeout(defaults.postLoadDelayMs);
@@ -40,23 +90,52 @@ async function captureOne(page, url, filePath, viewport, defaults) {
     fullPage: defaults.fullPage ?? true,
     animations: 'disabled',
   });
+
+  return waitUsed;
+}
+
+async function captureSide({
+  page,
+  url,
+  filePath,
+  viewport,
+  defaults,
+  resume,
+  label,
+}) {
+  if (resume && fs.existsSync(filePath)) {
+    return { status: 'skipped', waitUntil: null };
+  }
+
+  const waitUntil = await captureOne(page, url, filePath, viewport, defaults);
+  return { status: 'captured', waitUntil };
 }
 
 export async function captureScreenshots({
   runId = timestamp(),
   side = 'both',
   pageFilter = null,
+  tagFilter = null,
   headless = true,
+  continueOnError = true,
+  resume = false,
+  captureDefaults = {},
 } = {}) {
   const config = loadConfig();
-  const pages = filterPages(config.pages, pageFilter);
+  const defaults = mergeDefaults(config.defaults ?? {}, captureDefaults);
+  let pages = filterPages(config.pages, pageFilter);
+  pages = filterPagesByTags(pages, tagFilter);
+
   const runDir = path.join(process.cwd(), 'output', runId);
   const manifest = {
     runId,
     createdAt: new Date().toISOString(),
     side,
+    defaults,
+    options: { continueOnError, resume },
     viewports: config.viewports,
     pages: [],
+    failures: [],
   };
 
   const browser = await chromium.launch({ headless });
@@ -64,7 +143,11 @@ export async function captureScreenshots({
     ignoreHTTPSErrors: true,
     locale: 'sv-SE',
   });
+  await setupRequestBlocking(context);
   const page = await context.newPage();
+
+  const total = pages.length * config.viewports.length * (side === 'both' ? 2 : 1);
+  let step = 0;
 
   for (const entry of pages) {
     for (const viewport of config.viewports) {
@@ -78,18 +161,49 @@ export async function captureScreenshots({
         reference: entry.reference,
         target: entry.target,
         files: {},
+        capture: {},
       };
 
-      if (side === 'both' || side === 'reference') {
-        const refPath = path.join(runDir, 'reference', `${baseName}.png`);
-        await captureOne(page, entry.reference, refPath, viewport, config.defaults);
-        record.files.reference = path.relative(runDir, refPath);
-      }
+      const sides = side === 'both' ? ['reference', 'target'] : [side];
 
-      if (side === 'both' || side === 'target') {
-        const targetPath = path.join(runDir, 'target', `${baseName}.png`);
-        await captureOne(page, entry.target, targetPath, viewport, config.defaults);
-        record.files.target = path.relative(runDir, targetPath);
+      for (const captureSideName of sides) {
+        step += 1;
+        const url = captureSideName === 'reference' ? entry.reference : entry.target;
+        const filePath = path.join(runDir, captureSideName, `${baseName}.png`);
+        const progress = `[${step}/${total}]`;
+
+        try {
+          console.log(`${progress} ${captureSideName} ${entry.id} (${viewport.id})`);
+          const result = await captureSide({
+            page,
+            url,
+            filePath,
+            viewport,
+            defaults,
+            resume,
+            label: entry.label,
+          });
+          record.files[captureSideName] = path.relative(runDir, filePath);
+          record.capture[captureSideName] = result;
+        } catch (error) {
+          const failure = {
+            id: entry.id,
+            viewport: viewport.id,
+            side: captureSideName,
+            url,
+            error: error.message,
+          };
+          manifest.failures.push(failure);
+          record.capture[captureSideName] = { status: 'failed', error: error.message };
+
+          console.warn(`${progress} FAILED ${url}: ${error.message}`);
+
+          if (!continueOnError) {
+            await browser.close();
+            fs.writeFileSync(path.join(runDir, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
+            throw error;
+          }
+        }
       }
 
       manifest.pages.push(record);
@@ -98,5 +212,10 @@ export async function captureScreenshots({
 
   await browser.close();
   fs.writeFileSync(path.join(runDir, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
+
+  if (manifest.failures.length > 0) {
+    console.warn(`Capture finished with ${manifest.failures.length} failure(s). See manifest.failures`);
+  }
+
   return { runId, runDir, manifest };
 }

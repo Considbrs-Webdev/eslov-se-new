@@ -1,7 +1,7 @@
 {
     "coverage": {
-        "generated_at": "2026-06-30T11:42:48+00:00",
-        "page_count": 69,
+        "generated_at": "2026-07-02T08:52:32+00:00",
+        "page_count": 56,
         "module_types_on_main": {
             "mod-navigation": true,
             "mod-hero": true,
@@ -21,27 +21,64 @@
             "mod-text": true,
             "mod-image": true
         },
-        "subsites": [
-            3,
-            4,
-            7,
-            8,
-            10,
-            11,
-            12,
-            13,
-            14,
-            15,
-            16
+        "subsites": {
+            "3": 3,
+            "4": 4,
+            "7": 7,
+            "12": 12,
+            "15": 15,
+            "16": 16
+        },
+        "skipped_subsites": [
+            {
+                "blog_id": 8,
+                "domain": "varumarkesmanual.eslov-se-new.ddev.site",
+                "archived": true,
+                "deleted": false,
+                "spam": false,
+                "public": true
+            },
+            {
+                "blog_id": 10,
+                "domain": "storatorg.eslov-se-new.ddev.site",
+                "archived": true,
+                "deleted": false,
+                "spam": false,
+                "public": false
+            },
+            {
+                "blog_id": 11,
+                "domain": "sommarieslov.eslov-se-new.ddev.site",
+                "archived": true,
+                "deleted": false,
+                "spam": false,
+                "public": true
+            },
+            {
+                "blog_id": 13,
+                "domain": "eslovsfesten.eslov-se-new.ddev.site",
+                "archived": true,
+                "deleted": false,
+                "spam": false,
+                "public": true
+            },
+            {
+                "blog_id": 14,
+                "domain": "valarbetare.eslov-se-new.ddev.site",
+                "archived": true,
+                "deleted": false,
+                "spam": false,
+                "public": true
+            }
         ],
         "tags": {
-            "layout": 15,
-            "module": 38,
+            "layout": 10,
+            "module": 35,
             "mod-navigation": 7,
             "shim": 2,
             "utility": 1,
             "mod-hero": 6,
-            "mod-posts": 10,
+            "mod-posts": 7,
             "mod-manualinput": 1,
             "mod-contacts": 1,
             "mod-section-split": 1,
@@ -56,13 +93,13 @@
             "mod-event": 3,
             "mod-text": 1,
             "mod-image": 1,
-            "cpt": 16,
+            "cpt": 11,
             "archive": 2,
             "nyheter": 1,
-            "event": 13,
+            "event": 8,
             "single": 3,
             "job-listing": 1,
-            "subsite": 42
+            "subsite": 29
         }
     },
     "pages": [
@@ -689,117 +726,6 @@
             "notes": "Subsite event archive"
         },
         {
-            "id": "sub8-home",
-            "label": "Subsite home: Varumärkesmanual",
-            "blog_id": 8,
-            "tags": [
-                "subsite",
-                "layout"
-            ],
-            "path": "/",
-            "reference": "https://varumarkesmanual.eslov.se/",
-            "target": "https://varumarkesmanual.eslov-se-new.ddev.site/",
-            "notes": "Subsite homepage tokens/header/footer"
-        },
-        {
-            "id": "sub8-posts",
-            "label": "Varumärkesmanual — mod-posts",
-            "blog_id": 8,
-            "post_id": 500,
-            "tags": [
-                "subsite",
-                "module",
-                "mod-posts"
-            ],
-            "path": "/mallar-for-word-och-powerpoint/mallar-i-powerpoint/",
-            "reference": "https://varumarkesmanual.eslov.se/mallar-for-word-och-powerpoint/mallar-i-powerpoint/",
-            "target": "https://varumarkesmanual.eslov-se-new.ddev.site/mallar-for-word-och-powerpoint/mallar-i-powerpoint/",
-            "notes": "Subsite example for mod-posts"
-        },
-        {
-            "id": "sub8-events",
-            "label": "Varumärkesmanual — events archive",
-            "blog_id": 8,
-            "tags": [
-                "subsite",
-                "cpt",
-                "event"
-            ],
-            "path": "/event/",
-            "reference": "https://varumarkesmanual.eslov.se/event/",
-            "target": "https://varumarkesmanual.eslov-se-new.ddev.site/event/",
-            "notes": "Subsite event archive"
-        },
-        {
-            "id": "sub10-home",
-            "label": "Subsite home: Stora torg",
-            "blog_id": 10,
-            "tags": [
-                "subsite",
-                "layout"
-            ],
-            "path": "/",
-            "reference": "https://storatorg.eslov.se/",
-            "target": "https://storatorg.eslov-se-new.ddev.site/",
-            "notes": "Subsite homepage tokens/header/footer"
-        },
-        {
-            "id": "sub10-events",
-            "label": "Stora torg — events archive",
-            "blog_id": 10,
-            "tags": [
-                "subsite",
-                "cpt",
-                "event"
-            ],
-            "path": "/event/",
-            "reference": "https://storatorg.eslov.se/event/",
-            "target": "https://storatorg.eslov-se-new.ddev.site/event/",
-            "notes": "Subsite event archive"
-        },
-        {
-            "id": "sub11-home",
-            "label": "Subsite home: Sommar i Eslöv",
-            "blog_id": 11,
-            "tags": [
-                "subsite",
-                "layout"
-            ],
-            "path": "/",
-            "reference": "https://sommarieslov.eslov.se/",
-            "target": "https://sommarieslov.eslov-se-new.ddev.site/",
-            "notes": "Subsite homepage tokens/header/footer"
-        },
-        {
-            "id": "sub11-posts",
-            "label": "Sommar i Eslöv — mod-posts",
-            "blog_id": 11,
-            "post_id": 318,
-            "tags": [
-                "subsite",
-                "module",
-                "mod-posts"
-            ],
-            "path": "/utflyktsmal/",
-            "reference": "https://sommarieslov.eslov.se/utflyktsmal/",
-            "target": "https://sommarieslov.eslov-se-new.ddev.site/utflyktsmal/",
-            "notes": "Subsite example for mod-posts"
-        },
-        {
-            "id": "sub11-events",
-            "label": "Sommar i Eslöv — events archive",
-            "blog_id": 11,
-            "tags": [
-                "subsite",
-                "cpt",
-                "event"
-            ],
-            "path": "/event/",
-            "reference": "https://sommarieslov.eslov.se/event/",
-            "target": "https://sommarieslov.eslov-se-new.ddev.site/event/",
-            "notes": "Subsite event archive"
-        },
-        {
             "id": "sub12-home",
             "label": "Subsite home: Eslövs kommuns historia",
             "blog_id": 12,
@@ -854,75 +780,6 @@
             "path": "/event/",
             "reference": "https://historia.eslov.se/event/",
             "target": "https://historia.eslov-se-new.ddev.site/event/",
-            "notes": "Subsite event archive"
-        },
-        {
-            "id": "sub13-home",
-            "label": "Subsite home: Eslövsfesten",
-            "blog_id": 13,
-            "tags": [
-                "subsite",
-                "layout"
-            ],
-            "path": "/",
-            "reference": "https://eslovsfesten.eslov.se/",
-            "target": "https://eslovsfesten.eslov-se-new.ddev.site/",
-            "notes": "Subsite homepage tokens/header/footer"
-        },
-        {
-            "id": "sub13-posts",
-            "label": "Eslövsfesten — mod-posts",
-            "blog_id": 13,
-            "post_id": 3691,
-            "tags": [
-                "subsite",
-                "module",
-                "mod-posts"
-            ],
-            "path": "/program/",
-            "reference": "https://eslovsfesten.eslov.se/program/",
-            "target": "https://eslovsfesten.eslov-se-new.ddev.site/program/",
-            "notes": "Subsite example for mod-posts"
-        },
-        {
-            "id": "sub13-events",
-            "label": "Eslövsfesten — events archive",
-            "blog_id": 13,
-            "tags": [
-                "subsite",
-                "cpt",
-                "event"
-            ],
-            "path": "/event/",
-            "reference": "https://eslovsfesten.eslov.se/event/",
-            "target": "https://eslovsfesten.eslov-se-new.ddev.site/event/",
-            "notes": "Subsite event archive"
-        },
-        {
-            "id": "sub14-home",
-            "label": "Subsite home: Valarbetare 2022",
-            "blog_id": 14,
-            "tags": [
-                "subsite",
-                "layout"
-            ],
-            "path": "/",
-            "reference": "https://valarbetare.eslov.se/",
-            "target": "https://valarbetare.eslov-se-new.ddev.site/",
-            "notes": "Subsite homepage tokens/header/footer"
-        },
-        {
-            "id": "sub14-events",
-            "label": "Valarbetare 2022 — events archive",
-            "blog_id": 14,
-            "tags": [
-                "subsite",
-                "cpt",
-                "event"
-            ],
-            "path": "/event/",
-            "reference": "https://valarbetare.eslov.se/event/",
-            "target": "https://valarbetare.eslov-se-new.ddev.site/event/",
             "notes": "Subsite event archive"
         },
         {

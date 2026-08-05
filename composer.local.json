@@ -9,6 +9,7 @@
     }
   ],
   "require": {
+    "10up/elasticpress": "5.3.3",
     "municipio-se/eslov-customisation": "dev-main"
   }
 }

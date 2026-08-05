@@ -196,21 +196,42 @@ foreach (['event', 'job-listing', 'place'] as $postType) {
 }
 restore_current_blog();
 
-$subsites = [
-    3 => 'medborgarhuset',
-    4 => 'foretag',
-    7 => 'programforoffentligmiljo',
-    8 => 'varumarkesmanual',
-    10 => 'storatorg',
-    11 => 'sommarieslov',
-    12 => 'historia',
-    13 => 'eslovsfesten',
-    14 => 'valarbetare',
-    15 => 'utveckla',
-    16 => 'plus',
-];
+function eslov_visual_active_subsites(): array
+{
+    $active = [];
+    $skipped = [];
 
-foreach ($subsites as $blogId => $slug) {
+    foreach (get_sites(['number' => 0]) as $site) {
+        $blogId = (int) $site->blog_id;
+        if ($blogId === 1) {
+            continue;
+        }
+
+        $entry = [
+            'blog_id' => $blogId,
+            'domain' => $site->domain,
+            'archived' => (bool) $site->archived,
+            'deleted' => (bool) $site->deleted,
+            'spam' => (bool) $site->spam,
+            'public' => (bool) $site->public,
+        ];
+
+        if ($site->archived || $site->deleted || $site->spam) {
+            $skipped[] = $entry;
+            continue;
+        }
+
+        $active[$blogId] = $entry;
+    }
+
+    ksort($active);
+
+    return [$active, $skipped];
+}
+
+[$activeSubsites, $skippedSubsites] = eslov_visual_active_subsites();
+
+foreach ($activeSubsites as $blogId => $siteMeta) {
     switch_to_blog($blogId);
     $name = get_bloginfo('name');
     restore_current_blog();
@@ -258,7 +279,8 @@ $coverage = [
     'generated_at' => gmdate('c'),
     'page_count' => count($unique),
     'module_types_on_main' => [],
-    'subsites' => array_keys($subsites),
+    'subsites' => array_map(static fn (array $site): int => $site['blog_id'], $activeSubsites),
+    'skipped_subsites' => $skippedSubsites,
     'tags' => [],
 ];
 
@@ -281,8 +303,9 @@ $pagesJson = [
         ['id' => 'mobile', 'width' => 390, 'height' => 844],
     ],
     'defaults' => [
-        'waitUntil' => 'networkidle',
-        'postLoadDelayMs' => 1500,
+        'waitUntil' => 'load',
+        'navigationTimeoutMs' => 60000,
+        'postLoadDelayMs' => 2000,
         'fullPage' => true,
         'threshold' => 0.1,
     ],
@@ -304,3 +327,9 @@ file_put_contents($root . '/pages.generated.json', json_encode($pagesJson, JSON_
 file_put_contents($root . '/pages-audit.json', json_encode(['coverage' => $coverage, 'pages' => $unique], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "\n");
 
 WP_CLI::success('Wrote ' . count($unique) . ' pages to tools/visual-diff/pages.generated.json');
+if ($skippedSubsites !== []) {
+    WP_CLI::log('Skipped archived/deleted/spam subsites: ' . implode(', ', array_map(
+        static fn (array $site): string => $site['domain'] . ' (blog ' . $site['blog_id'] . ')',
+        $skippedSubsites
+    )));
+}
