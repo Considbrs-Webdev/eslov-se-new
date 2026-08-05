@@ -6,9 +6,14 @@
     {
       "type": "vcs",
       "url": "https://github.com/Considbrs-Webdev/eslov-customisation"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/Considbrs-Webdev/VismaXMLImport"
     }
   ],
   "require": {
-    "municipio-se/eslov-customisation": "dev-main"
+    "municipio-se/eslov-customisation": "dev-main",
+    "municipio-se/visma-xml-import": "dev-main"
   }
 }
