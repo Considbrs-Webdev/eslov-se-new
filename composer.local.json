@@ -10,19 +10,11 @@
     {
       "type": "vcs",
       "url": "https://github.com/Considbrs-Webdev/VismaXMLImport"
-    },
-    {
-      "type": "vcs",
-      "url": "https://github.com/Considbrs-Webdev/modularity-noticeboard"
     }
-  ],
-  "unset-require": [
-    "municipio-se/modularity-noticeboard"
   ],
   "require": {
     "10up/elasticpress": "5.3.3",
     "municipio-se/eslov-customisation": "dev-main",
-    "municipio-se/visma-xml-import": "dev-main",
-    "considbrs-webdev/modularity-noticeboard": "dev-dev"
+    "municipio-se/visma-xml-import": "dev-main"
   }
 }
