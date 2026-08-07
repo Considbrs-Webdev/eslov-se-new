@@ -20,6 +20,6 @@
     "10up/elasticpress": "5.3.3",
     "municipio-se/eslov-customisation": "dev-main",
     "municipio-se/visma-xml-import": "dev-main",
-    "municipio-se/modularity-noticeboard": "dev-main"
+    "municipio-se/modularity-noticeboard": "dev-dev"
   }
 }
