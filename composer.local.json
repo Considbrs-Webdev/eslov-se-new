@@ -14,6 +14,7 @@
   ],
   "require": {
     "10up/elasticpress": "5.3.3",
+    "considbrs-webdev/modularity-noticeboard": "dev-dev",
     "municipio-se/eslov-customisation": "dev-main",
     "municipio-se/visma-xml-import": "dev-main"
   }
