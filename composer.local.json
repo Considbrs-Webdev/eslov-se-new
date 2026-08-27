@@ -10,14 +10,19 @@
     {
       "type": "vcs",
       "url": "https://github.com/Considbrs-Webdev/VismaXMLImport"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/Considbrs-Webdev/modularity-arcgis-map"
     }
   ],
   "require": {
     "10up/elasticpress": "5.3.3",
+    "considbrs-webdev/modularity-arcgis-map": "dev-dev",
     "considbrs-webdev/modularity-noticeboard": "dev-dev",
     "helsingborg-stad/api-event-manager": "3.18.4",
     "municipio-se/eslov-customisation": "dev-main",
     "municipio-se/visma-xml-import": "dev-main",
-    "considbrs-webdev/typesense-search": "1.5.0"	
+    "considbrs-webdev/typesense-search": "1.5.0"
   }
 }
