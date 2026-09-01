@@ -1,0 +1,96 @@
+name: Build artefact
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+env:
+  PHP_VERSION: ${{ vars.PHP_VERSION }}
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      YOAST_COMPOSER_TOKEN: ${{ secrets.YOAST_COMPOSER_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24.11.1
+
+      - name: Setup PHP with composer v2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          tools: composer:v2
+        env:
+          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache composer packages
+        uses: actions/cache@v5
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Combine composer.json and composer.local.json
+        run: php ./composer-local-merge.php pre-install
+
+      - name: Validate Yoast Premium auth
+        if: env.YOAST_COMPOSER_TOKEN == ''
+        run: |
+          if grep -q '"yoast/wordpress-seo-premium"' composer.local.json; then
+            echo "::error::YOAST_COMPOSER_TOKEN secret is required when yoast/wordpress-seo-premium is enabled in composer.local.json."
+            exit 1
+          fi
+
+      - name: Configure Composer auth for Yoast Premium
+        if: env.YOAST_COMPOSER_TOKEN != ''
+        run: composer config --global --auth http-basic.my.yoast.com token "$YOAST_COMPOSER_TOKEN"
+
+      - name: Install composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress --optimize-autoloader --classmap-authoritative
+
+      - name: Write composer versions info file
+        run: composer show > composer.versions.md
+
+      - name: Inject npm token
+        run: |
+          echo "@helsingborg-stad:registry=https://npm.pkg.github.com/helsingborg-stad" >> ~/.npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> ~/.npmrc
+
+      - name: Download ACF plugin
+        run: |
+          wget "${{ secrets.ACF_URL }}" -O acf.zip
+          unzip -q acf.zip -d wp-content/plugins/
+          rm -f acf.zip
+
+      - name: Execute build scripts
+        run: php ./build.php --cleanup --no-composer-in-child-packages --install-npm
+
+      - name: Cleanup .npmrc
+        run: rm -f ~/.npmrc
+
+      - name: Create release tarball
+        run: bash ./scripts/create-artifact.sh
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-package
+          path: release.tar.gz
+          if-no-files-found: error
+          retention-days: 7

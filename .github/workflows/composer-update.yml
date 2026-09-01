@@ -11,7 +11,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: ${{ vars.PHP_VERSION }}
           extensions: imagick
       - name: Install Composer
         run: |

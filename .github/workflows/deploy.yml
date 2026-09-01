@@ -1,0 +1,166 @@
+# Manual deploy. Select a GitHub Environment at dispatch time.
+#
+# Per-environment variables:
+#   DEPLOY_HOST        SSH hostname
+#   DEPLOY_USER        SSH user
+#   DEPLOY_WEB_ROOT    Absolute path to the site folder (parent of releases/ and htdocs)
+#   DEPLOY_PORT        Optional, default 22
+#   DEPLOY_KEEP_RELEASES  Optional, default 5
+#   DEPLOY_LS_CACHE_PATH  Optional LiteSpeed cache dir to empty after switch
+#
+# Per-environment secrets:
+#   DEPLOY_SSH_PRIVATE_KEY
+#   DEPLOY_KNOWN_HOSTS     Optional; ssh-keyscan is used when unset
+#
+# Shared repo variable: PHP_VERSION
+# Shared repo secret:   ACF_URL
+
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target GitHub Environment
+        required: true
+        type: choice
+        options:
+          - oderland
+          - staging
+          - production
+        default: oderland
+
+concurrency:
+  group: deploy-${{ inputs.environment }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    secrets: inherit
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment: ${{ inputs.environment }}
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Download workflow artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: release-package
+          path: .
+
+      - name: Verify artifact exists
+        run: ls -lah release.tar.gz
+
+      - name: Check deploy configuration
+        env:
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+          DEPLOY_WEB_ROOT: ${{ vars.DEPLOY_WEB_ROOT }}
+          DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          missing=0
+          for name in DEPLOY_HOST DEPLOY_USER DEPLOY_WEB_ROOT DEPLOY_SSH_PRIVATE_KEY; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Environment '${{ inputs.environment }}' is missing $name."
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+
+      - name: Configure SSH
+        env:
+          DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
+        run: |
+          set -euo pipefail
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_PRIVATE_KEY" | sed 's/\r$//' > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+          PORT="${DEPLOY_PORT:-22}"
+          if [ -n "$DEPLOY_KNOWN_HOSTS" ]; then
+            printf '%s\n' "$DEPLOY_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+          else
+            KEYSCAN_OUT=$(ssh-keyscan -p "$PORT" -T 30 "$DEPLOY_HOST" 2>/dev/null || true)
+            if [ -z "$KEYSCAN_OUT" ]; then
+              echo "::error::ssh-keyscan returned no host keys for ${DEPLOY_HOST} port ${PORT}. Set DEPLOY_KNOWN_HOSTS on this environment."
+              exit 1
+            fi
+            printf '%s\n' "$KEYSCAN_OUT" >> ~/.ssh/known_hosts
+          fi
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Ensure releases directory exists
+        env:
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+          DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
+          DEPLOY_WEB_ROOT: ${{ vars.DEPLOY_WEB_ROOT }}
+        run: |
+          set -euo pipefail
+          PORT="${DEPLOY_PORT:-22}"
+          ssh -i ~/.ssh/deploy_key -p "$PORT" -o IdentitiesOnly=yes \
+            "${DEPLOY_USER}@${DEPLOY_HOST}" \
+            "mkdir -p '${DEPLOY_WEB_ROOT}/releases'"
+
+      - name: Upload release artifact
+        env:
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+          DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
+          DEPLOY_WEB_ROOT: ${{ vars.DEPLOY_WEB_ROOT }}
+        run: |
+          set -euo pipefail
+          PORT="${DEPLOY_PORT:-22}"
+          scp -i ~/.ssh/deploy_key -P "$PORT" -o IdentitiesOnly=yes \
+            release.tar.gz \
+            "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_WEB_ROOT}/releases/release.tar.gz"
+
+      - name: Upload release script
+        env:
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+          DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
+          DEPLOY_WEB_ROOT: ${{ vars.DEPLOY_WEB_ROOT }}
+        run: |
+          set -euo pipefail
+          PORT="${DEPLOY_PORT:-22}"
+          scp -i ~/.ssh/deploy_key -P "$PORT" -o IdentitiesOnly=yes \
+            scripts/create-release.sh \
+            "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_WEB_ROOT}/releases/create-release.sh"
+
+      - name: Run release script on server
+        env:
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+          DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
+          DEPLOY_WEB_ROOT: ${{ vars.DEPLOY_WEB_ROOT }}
+          DEPLOY_KEEP_RELEASES: ${{ vars.DEPLOY_KEEP_RELEASES }}
+          DEPLOY_LS_CACHE_PATH: ${{ vars.DEPLOY_LS_CACHE_PATH }}
+        run: |
+          set -euo pipefail
+          PORT="${DEPLOY_PORT:-22}"
+          ssh -i ~/.ssh/deploy_key -p "$PORT" -o IdentitiesOnly=yes \
+            "${DEPLOY_USER}@${DEPLOY_HOST}" \
+            "chmod 700 '${DEPLOY_WEB_ROOT}/releases/create-release.sh' && \
+             SITE_ROOT='${DEPLOY_WEB_ROOT}' \
+             KEEP_RELEASES='${DEPLOY_KEEP_RELEASES:-5}' \
+             LS_CACHE_PATH='${DEPLOY_LS_CACHE_PATH}' \
+             bash '${DEPLOY_WEB_ROOT}/releases/create-release.sh' \
+               '${DEPLOY_WEB_ROOT}/releases/release.tar.gz'"
