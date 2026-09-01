@@ -20,7 +20,13 @@ if [ -f "$INCLUDE_FILE" ]; then
   echo "Included $COUNT paths."
 else
   echo "No include list found; snapshotting working tree with default excludes"
-  rsync -a --delete --exclude='.git' --exclude='.github' --exclude='node_modules' --exclude='build' ./ "$TMPDIR/"
+  # Do not exclude a generic 'build' path: plugins such as redirection ship
+  # compiled assets in wp-content/plugins/<name>/build/.
+  rsync -a --delete \
+    --exclude='.git' \
+    --exclude='.github' \
+    --exclude='node_modules' \
+    ./ "$TMPDIR/"
 fi
 tar -C "$TMPDIR" -czf release.tar.gz .
 rm -rf "$TMPDIR"
