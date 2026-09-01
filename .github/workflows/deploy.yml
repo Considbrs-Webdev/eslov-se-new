@@ -80,6 +80,19 @@ jobs:
           if [ "$missing" -ne 0 ]; then
             exit 1
           fi
+          case "$DEPLOY_WEB_ROOT" in
+            /*) ;;
+            *)
+              echo "::error::DEPLOY_WEB_ROOT must be an absolute path (got: $DEPLOY_WEB_ROOT)."
+              exit 1
+              ;;
+          esac
+          case "$DEPLOY_WEB_ROOT" in
+            *..*|*$'\n'*|*\'*|*' '*|*\;*)
+              echo "::error::DEPLOY_WEB_ROOT contains unsafe characters."
+              exit 1
+              ;;
+          esac
 
       - name: Configure SSH
         env:
