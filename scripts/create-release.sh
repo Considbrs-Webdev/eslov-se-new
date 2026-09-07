@@ -1,21 +1,25 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Atomic release: extract a tarball under $SITE_ROOT/releases and point htdocs at it.
+# Atomic release: extract a tarball under $SITE_ROOT/releases and point
+# $HTDOCS_NAME (htdocs or current) at it.
 #
 # Required:
-#   SITE_ROOT   Absolute path to the site folder (config/, releases/, uploads/, htdocs).
+#   SITE_ROOT   Absolute path to the site folder (config/, releases/, uploads/, htdocs|current).
 #               Set from GitHub Actions as vars.DEPLOY_WEB_ROOT.
 #
 # Optional:
-#   TAR_PATH           Path to release.tar.gz (default: $SITE_ROOT/releases/release.tar.gz)
-#   KEEP_RELEASES      How many release dirs/tarballs to keep (default: 5)
-#   HTDOCS_NAME        Symlink name under SITE_ROOT (default: htdocs)
-#   CONFIG_PATH        (default: $SITE_ROOT/config)
-#   UPLOADS_PATH       (default: $SITE_ROOT/uploads)
-#   LANGUAGES_PATH     (default: $SITE_ROOT/languages)
-#   BLADE_CACHE_PATH   Cleared if the directory exists (default: $SITE_ROOT/tmp/blade-cache)
-#   LS_CACHE_PATH      Cleared if set and the directory exists
+#   TAR_PATH                Path to release.tar.gz (default: $SITE_ROOT/releases/release.tar.gz)
+#   KEEP_RELEASES           How many release dirs/tarballs to keep (default: 5)
+#   HTDOCS_NAME             Symlink name under SITE_ROOT (default: htdocs)
+#   CONFIG_PATH             (default: $SITE_ROOT/config)
+#   UPLOADS_PATH            (default: $SITE_ROOT/uploads)
+#   LANGUAGES_PATH          (default: $SITE_ROOT/languages)
+#   BLADE_CACHE_PATH        Cleared if the directory exists (default: $SITE_ROOT/tmp/blade-cache)
+#   FASTCGI_CACHE_PATH      Cleared if set and the directory exists (GleSYS nginx FastCGI cache)
+#   LS_CACHE_PATH           Cleared if set and the directory exists
+#   PURGE_LITESPEED         Set to 1 to run wp litespeed-purge (also runs when LS_CACHE_PATH is set)
+#   RESTART_NGINX_PHPFPM    Set to 1 to sudo-restart nginx and php8.3-fpm after switch + cache clears
 #
 # Usage:
 #   SITE_ROOT=/path/to/municipio bash create-release.sh [/path/to/release.tar.gz]
@@ -65,6 +69,26 @@ require_inside_site() {
   fi
 }
 
+clear_dir_if_inside_site() {
+  local label=$1
+  local path=$2
+
+  if [ -z "$path" ] || [ ! -d "$path" ]; then
+    return 0
+  fi
+
+  if command -v realpath >/dev/null 2>&1; then
+    path="$(realpath -e "$path")"
+  fi
+
+  if path_is_inside "$SITE_ROOT" "$path"; then
+    echo "Clearing $label: $path"
+    find "$path" -mindepth 1 -xdev -exec rm -rf {} +
+  else
+    echo "Skipping $label clear (path outside SITE_ROOT: $path)"
+  fi
+}
+
 TAR_PATH="${1:-${TAR_PATH:-$SITE_ROOT/releases/release.tar.gz}}"
 KEEP_RELEASES="${KEEP_RELEASES:-5}"
 HTDOCS_NAME="${HTDOCS_NAME:-htdocs}"
@@ -72,7 +96,10 @@ CONFIG_PATH="${CONFIG_PATH:-$SITE_ROOT/config}"
 UPLOADS_PATH="${UPLOADS_PATH:-$SITE_ROOT/uploads}"
 LANGUAGES_PATH="${LANGUAGES_PATH:-$SITE_ROOT/languages}"
 BLADE_CACHE_PATH="${BLADE_CACHE_PATH:-$SITE_ROOT/tmp/blade-cache}"
+FASTCGI_CACHE_PATH="${FASTCGI_CACHE_PATH:-}"
 LS_CACHE_PATH="${LS_CACHE_PATH:-}"
+PURGE_LITESPEED="${PURGE_LITESPEED:-}"
+RESTART_NGINX_PHPFPM="${RESTART_NGINX_PHPFPM:-}"
 RELEASES_DIR="$SITE_ROOT/releases"
 PRIVATE_PLUGINS_DIR="$SITE_ROOT/plugins"
 SYMLINK_PATH="$SITE_ROOT/$HTDOCS_NAME"
@@ -257,32 +284,13 @@ fi
 echo "Updating symlink: $SYMLINK_PATH -> $TARGET_DIR"
 ln -sfn "$TARGET_DIR" "$SYMLINK_PATH"
 
-if [ -d "$BLADE_CACHE_PATH" ]; then
-  if command -v realpath >/dev/null 2>&1; then
-    BLADE_CACHE_PATH="$(realpath -e "$BLADE_CACHE_PATH")"
-  fi
-  if path_is_inside "$SITE_ROOT" "$BLADE_CACHE_PATH"; then
-    echo "Clearing blade cache: $BLADE_CACHE_PATH"
-    find "$BLADE_CACHE_PATH" -mindepth 1 -xdev -exec rm -rf {} +
-  else
-    echo "Skipping blade cache clear (path outside SITE_ROOT: $BLADE_CACHE_PATH)"
-  fi
-fi
-
-if [ -n "$LS_CACHE_PATH" ] && [ -d "$LS_CACHE_PATH" ]; then
-  if command -v realpath >/dev/null 2>&1; then
-    LS_CACHE_PATH="$(realpath -e "$LS_CACHE_PATH")"
-  fi
-  if path_is_inside "$SITE_ROOT" "$LS_CACHE_PATH"; then
-    echo "Clearing LiteSpeed page cache: $LS_CACHE_PATH"
-    find "$LS_CACHE_PATH" -mindepth 1 -xdev -exec rm -rf {} +
-  else
-    echo "Skipping LiteSpeed cache clear (path outside SITE_ROOT: $LS_CACHE_PATH)"
-  fi
-fi
+clear_dir_if_inside_site "blade cache" "$BLADE_CACHE_PATH"
+clear_dir_if_inside_site "FastCGI cache" "$FASTCGI_CACHE_PATH"
+clear_dir_if_inside_site "LiteSpeed page cache" "$LS_CACHE_PATH"
 
 WP_PATH="$SYMLINK_PATH/wp"
-if command -v wp >/dev/null 2>&1 && [ -d "$WP_PATH" ]; then
+if { [ -n "$LS_CACHE_PATH" ] || [ "$PURGE_LITESPEED" = "1" ]; } \
+  && command -v wp >/dev/null 2>&1 && [ -d "$WP_PATH" ]; then
   if command -v realpath >/dev/null 2>&1; then
     WP_PATH="$(realpath -e "$WP_PATH")"
   fi
@@ -292,6 +300,12 @@ if command -v wp >/dev/null 2>&1 && [ -d "$WP_PATH" ]; then
   else
     echo "Skipping WP-CLI purge (path outside SITE_ROOT: $WP_PATH)"
   fi
+fi
+
+if [ "$RESTART_NGINX_PHPFPM" = "1" ]; then
+  echo "Restarting nginx and php-fpm"
+  sudo /etc/init.d/nginx restart
+  sudo /etc/init.d/php8.3-fpm restart
 fi
 
 NEW_TAR_NAME="release-${DATE}-${SHORT_HASH}.tar.gz"
