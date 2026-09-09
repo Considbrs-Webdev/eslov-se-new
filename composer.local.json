@@ -17,7 +17,6 @@
     }
   ],
   "require": {
-    "10up/elasticpress": "5.3.3",
     "considbrs-webdev/modularity-arcgis-map": "dev-dev",
     "considbrs-webdev/modularity-noticeboard": "dev-dev",
     "helsingborg-stad/api-event-manager": "3.18.4",
