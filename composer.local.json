@@ -23,6 +23,7 @@
     "helsingborg-stad/api-event-manager": "3.18.4",
     "municipio-se/eslov-customisation": "dev-main",
     "municipio-se/visma-xml-import": "dev-main",
-    "considbrs-webdev/typesense-search": "1.5.0"
+    "considbrs-webdev/typesense-search": "1.5.0",
+    "wpackagist-plugin/mailpoet": "^5.17"
   }
 }
