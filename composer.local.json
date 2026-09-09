@@ -23,6 +23,7 @@
     "municipio-se/eslov-customisation": "dev-main",
     "municipio-se/visma-xml-import": "dev-main",
     "considbrs-webdev/typesense-search": "1.5.0",
-    "wpackagist-plugin/mailpoet": "^5.17"
+    "wpackagist-plugin/mailpoet": "^5.17",
+    "wpackagist-plugin/two-factor": "^0.9.1"
   }
 }
