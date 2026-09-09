@@ -1,19 +1,32 @@
 # Manual deploy. Select a GitHub Environment at dispatch time.
 #
+# Shared repo variable: PHP_VERSION
+# Shared repo secret:   ACF_URL
+#
 # Per-environment variables:
-#   DEPLOY_HOST        SSH hostname
-#   DEPLOY_USER        SSH user
-#   DEPLOY_WEB_ROOT    Absolute path to the site folder (parent of releases/ and htdocs)
-#   DEPLOY_PORT        Optional, default 22
-#   DEPLOY_KEEP_RELEASES  Optional, default 5
-#   DEPLOY_LS_CACHE_PATH  Optional LiteSpeed cache dir to empty after switch
+#   DEPLOY_HOST              SSH hostname (Access hostname on staging/production)
+#   DEPLOY_USER              SSH user
+#   DEPLOY_WEB_ROOT          Absolute path to the site folder (parent of releases/ and htdocs|current)
+#   DEPLOY_PORT              Optional, default 22
+#   DEPLOY_KEEP_RELEASES     Optional, default 5
+#   DEPLOY_LS_CACHE_PATH     Optional LiteSpeed cache dir to empty after switch (oderland)
+#   HTDOCS_NAME              Symlink name under SITE_ROOT (default htdocs; GleSYS: current)
+#   BLADE_CACHE_PATH         Optional; default $SITE_ROOT/tmp/blade-cache (GleSYS: $DEPLOY_WEB_ROOT/cache/blade)
+#   FASTCGI_CACHE_PATH       Optional; unset skips FastCGI clear (GleSYS: $DEPLOY_WEB_ROOT/cache/fastcgi)
+#   UPLOADS_PATH             Optional; default $SITE_ROOT/uploads (GleSYS: $DEPLOY_WEB_ROOT/shared/uploads)
+#   LANGUAGES_PATH           Optional; default $SITE_ROOT/languages (GleSYS: $DEPLOY_WEB_ROOT/shared/languages)
+#   RESTART_NGINX_PHPFPM     Set to 1 to restart nginx + php8.3-fpm via sudo /etc/init.d (GleSYS)
+#   PURGE_LITESPEED          Set to 1 to run wp litespeed-purge (oderland default 1; leave unset on GleSYS)
+#   CF_CLIENT_ACCESS_ID      Cloudflare Access service token id (staging/production; maps to TUNNEL_SERVICE_TOKEN_ID)
 #
 # Per-environment secrets:
 #   DEPLOY_SSH_PRIVATE_KEY
-#   DEPLOY_KNOWN_HOSTS     Optional; ssh-keyscan is used when unset
+#   DEPLOY_KNOWN_HOSTS       Optional on oderland (ssh-keyscan fallback). Required on staging/production.
+#   CF_ACCESS_CLIENT_SECRET  Cloudflare Access service token secret (staging/production; maps to TUNNEL_SERVICE_TOKEN_SECRET)
 #
-# Shared repo variable: PHP_VERSION
-# Shared repo secret:   ACF_URL
+# staging/production SSH uses Cloudflared Access (ProxyCommand). oderland is direct SSH.
+# Empty GleSYS-specific vars on staging/production are derived from DEPLOY_WEB_ROOT (not hardcoded consid paths).
+# Empty new vars on oderland leave create-release.sh defaults unchanged.
 
 name: Deploy
 
@@ -29,6 +42,11 @@ on:
           - staging
           - production
         default: oderland
+      site_root_override:
+        description: Optional absolute SITE_ROOT override (e.g. a web_test folder)
+        required: false
+        type: string
+        default: ""
 
 concurrency:
   group: deploy-${{ inputs.environment }}
@@ -48,6 +66,9 @@ jobs:
     needs: build
     environment: ${{ inputs.environment }}
     timeout-minutes: 45
+    env:
+      TUNNEL_SERVICE_TOKEN_ID: ${{ vars.CF_CLIENT_ACCESS_ID }}
+      TUNNEL_SERVICE_TOKEN_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
 
     steps:
       - name: Checkout repository
@@ -67,9 +88,44 @@ jobs:
           DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
           DEPLOY_USER: ${{ vars.DEPLOY_USER }}
           DEPLOY_WEB_ROOT: ${{ vars.DEPLOY_WEB_ROOT }}
+          DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
+          DEPLOY_KEEP_RELEASES: ${{ vars.DEPLOY_KEEP_RELEASES }}
+          DEPLOY_LS_CACHE_PATH: ${{ vars.DEPLOY_LS_CACHE_PATH }}
           DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          SITE_ROOT_OVERRIDE: ${{ inputs.site_root_override }}
+          HTDOCS_NAME: ${{ vars.HTDOCS_NAME }}
+          BLADE_CACHE_PATH: ${{ vars.BLADE_CACHE_PATH }}
+          FASTCGI_CACHE_PATH: ${{ vars.FASTCGI_CACHE_PATH }}
+          UPLOADS_PATH: ${{ vars.UPLOADS_PATH }}
+          LANGUAGES_PATH: ${{ vars.LANGUAGES_PATH }}
+          RESTART_NGINX_PHPFPM: ${{ vars.RESTART_NGINX_PHPFPM }}
+          PURGE_LITESPEED: ${{ vars.PURGE_LITESPEED }}
+          USE_CLOUDFLARED: ${{ inputs.environment == 'staging' || inputs.environment == 'production' }}
         run: |
           set -euo pipefail
+
+          validate_abs_path() {
+            local name=$1
+            local value=$2
+            if [ -z "$value" ]; then
+              return 0
+            fi
+            case "$value" in
+              /*) ;;
+              *)
+                echo "::error::${name} must be an absolute path (got: ${value})."
+                exit 1
+                ;;
+            esac
+            case "$value" in
+              *..*|*$'\n'*|*\'*|*' '*|*\;*)
+                echo "::error::${name} contains unsafe characters."
+                exit 1
+                ;;
+            esac
+          }
+
           missing=0
           for name in DEPLOY_HOST DEPLOY_USER DEPLOY_WEB_ROOT DEPLOY_SSH_PRIVATE_KEY; do
             if [ -z "${!name}" ]; then
@@ -80,100 +136,148 @@ jobs:
           if [ "$missing" -ne 0 ]; then
             exit 1
           fi
-          case "$DEPLOY_WEB_ROOT" in
-            /*) ;;
-            *)
-              echo "::error::DEPLOY_WEB_ROOT must be an absolute path (got: $DEPLOY_WEB_ROOT)."
+
+          if [ "${USE_CLOUDFLARED}" = "true" ]; then
+            if [ -z "${TUNNEL_SERVICE_TOKEN_ID:-}" ] || [ -z "${TUNNEL_SERVICE_TOKEN_SECRET:-}" ]; then
+              echo "::error::Environment '${{ inputs.environment }}' requires CF_CLIENT_ACCESS_ID and CF_ACCESS_CLIENT_SECRET (Cloudflare Access service token)."
               exit 1
-              ;;
-          esac
-          case "$DEPLOY_WEB_ROOT" in
-            *..*|*$'\n'*|*\'*|*' '*|*\;*)
-              echo "::error::DEPLOY_WEB_ROOT contains unsafe characters."
+            fi
+            if [ -z "$DEPLOY_KNOWN_HOSTS" ]; then
+              echo "::error::DEPLOY_KNOWN_HOSTS is required for '${{ inputs.environment }}' (ssh-keyscan is unreliable behind Cloudflare Access)."
               exit 1
-              ;;
-          esac
+            fi
+          fi
+
+          EFFECTIVE_ROOT="${SITE_ROOT_OVERRIDE:-$DEPLOY_WEB_ROOT}"
+          if [ -z "$EFFECTIVE_ROOT" ]; then
+            echo "::error::Effective SITE_ROOT is empty."
+            exit 1
+          fi
+          validate_abs_path "DEPLOY_WEB_ROOT" "$EFFECTIVE_ROOT"
+
+          if [ "${USE_CLOUDFLARED}" = "true" ]; then
+            HTDOCS_NAME="${HTDOCS_NAME:-current}"
+            BLADE_CACHE_PATH="${BLADE_CACHE_PATH:-$EFFECTIVE_ROOT/cache/blade}"
+            FASTCGI_CACHE_PATH="${FASTCGI_CACHE_PATH:-$EFFECTIVE_ROOT/cache/fastcgi}"
+            UPLOADS_PATH="${UPLOADS_PATH:-$EFFECTIVE_ROOT/shared/uploads}"
+            LANGUAGES_PATH="${LANGUAGES_PATH:-$EFFECTIVE_ROOT/shared/languages}"
+            RESTART_NGINX_PHPFPM="${RESTART_NGINX_PHPFPM:-1}"
+          else
+            PURGE_LITESPEED="${PURGE_LITESPEED:-1}"
+          fi
+
+          if [ -n "$HTDOCS_NAME" ]; then
+            case "$HTDOCS_NAME" in
+              */*|*..*|*\'*|*' '*|*\;*|$'\n'*)
+                echo "::error::HTDOCS_NAME must be a single path segment (got: ${HTDOCS_NAME})."
+                exit 1
+                ;;
+            esac
+          fi
+
+          validate_abs_path "BLADE_CACHE_PATH" "$BLADE_CACHE_PATH"
+          validate_abs_path "FASTCGI_CACHE_PATH" "$FASTCGI_CACHE_PATH"
+          validate_abs_path "UPLOADS_PATH" "$UPLOADS_PATH"
+          validate_abs_path "LANGUAGES_PATH" "$LANGUAGES_PATH"
+          validate_abs_path "DEPLOY_LS_CACHE_PATH" "$DEPLOY_LS_CACHE_PATH"
+
+          {
+            echo "DEPLOY_HOST=$DEPLOY_HOST"
+            echo "DEPLOY_USER=$DEPLOY_USER"
+            echo "DEPLOY_WEB_ROOT=$EFFECTIVE_ROOT"
+            echo "DEPLOY_PORT=${DEPLOY_PORT:-22}"
+            echo "DEPLOY_KEEP_RELEASES=${DEPLOY_KEEP_RELEASES:-5}"
+            echo "LS_CACHE_PATH=$DEPLOY_LS_CACHE_PATH"
+            echo "HTDOCS_NAME=$HTDOCS_NAME"
+            echo "BLADE_CACHE_PATH=$BLADE_CACHE_PATH"
+            echo "FASTCGI_CACHE_PATH=$FASTCGI_CACHE_PATH"
+            echo "UPLOADS_PATH=$UPLOADS_PATH"
+            echo "LANGUAGES_PATH=$LANGUAGES_PATH"
+            echo "RESTART_NGINX_PHPFPM=$RESTART_NGINX_PHPFPM"
+            echo "PURGE_LITESPEED=$PURGE_LITESPEED"
+            echo "USE_CLOUDFLARED=$USE_CLOUDFLARED"
+          } >> "$GITHUB_ENV"
+
+      - name: Install cloudflared
+        if: inputs.environment == 'staging' || inputs.environment == 'production'
+        env:
+          CLOUDFLARED_VERSION: "2026.8.2"
+          CLOUDFLARED_SHA256: "fcfb02b575a52ca1af2e3267af4e1517bcdeb30ac48c834c69abaed3c0576ad2"
+        run: |
+          set -euo pipefail
+          curl -fsSL "https://github.com/cloudflare/cloudflared/releases/download/${CLOUDFLARED_VERSION}/cloudflared-linux-amd64" \
+            -o /tmp/cloudflared
+          echo "${CLOUDFLARED_SHA256}  /tmp/cloudflared" | sha256sum -c -
+          sudo install -m 755 /tmp/cloudflared /usr/local/bin/cloudflared
+          cloudflared version
 
       - name: Configure SSH
         env:
           DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
           DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
-          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
-          DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
         run: |
           set -euo pipefail
           install -d -m 700 ~/.ssh
           printf '%s\n' "$DEPLOY_SSH_PRIVATE_KEY" | sed 's/\r$//' > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
 
-          PORT="${DEPLOY_PORT:-22}"
-          if [ -n "$DEPLOY_KNOWN_HOSTS" ]; then
+          if [ -n "${DEPLOY_KNOWN_HOSTS:-}" ]; then
             printf '%s\n' "$DEPLOY_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+          elif [ "${USE_CLOUDFLARED}" = "true" ]; then
+            echo "::error::DEPLOY_KNOWN_HOSTS is required when using Cloudflare Access."
+            exit 1
           else
-            KEYSCAN_OUT=$(ssh-keyscan -p "$PORT" -T 30 "$DEPLOY_HOST" 2>/dev/null || true)
+            KEYSCAN_OUT=$(ssh-keyscan -p "$DEPLOY_PORT" -T 30 "$DEPLOY_HOST" 2>/dev/null || true)
             if [ -z "$KEYSCAN_OUT" ]; then
-              echo "::error::ssh-keyscan returned no host keys for ${DEPLOY_HOST} port ${PORT}. Set DEPLOY_KNOWN_HOSTS on this environment."
+              echo "::error::ssh-keyscan returned no host keys for ${DEPLOY_HOST} port ${DEPLOY_PORT}. Set DEPLOY_KNOWN_HOSTS on this environment."
               exit 1
             fi
             printf '%s\n' "$KEYSCAN_OUT" >> ~/.ssh/known_hosts
           fi
           chmod 600 ~/.ssh/known_hosts
 
-      - name: Ensure releases directory exists
-        env:
-          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
-          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
-          DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
-          DEPLOY_WEB_ROOT: ${{ vars.DEPLOY_WEB_ROOT }}
+          {
+            echo "Host deploy"
+            echo "  HostName ${DEPLOY_HOST}"
+            echo "  User ${DEPLOY_USER}"
+            echo "  Port ${DEPLOY_PORT}"
+            echo "  IdentityFile ~/.ssh/deploy_key"
+            echo "  IdentitiesOnly yes"
+            if [ "${USE_CLOUDFLARED}" = "true" ]; then
+              echo "  ProxyCommand cloudflared access ssh --hostname ${DEPLOY_HOST}"
+            fi
+          } > ~/.ssh/config
+          chmod 600 ~/.ssh/config
+
+      - name: Ensure server directories exist
         run: |
           set -euo pipefail
-          PORT="${DEPLOY_PORT:-22}"
-          ssh -i ~/.ssh/deploy_key -p "$PORT" -o IdentitiesOnly=yes \
-            "${DEPLOY_USER}@${DEPLOY_HOST}" \
-            "mkdir -p '${DEPLOY_WEB_ROOT}/releases'"
+          ssh deploy "mkdir -p '${DEPLOY_WEB_ROOT}/releases' '${DEPLOY_WEB_ROOT}/scripts' && rm -f '${DEPLOY_WEB_ROOT}/releases/create-release.sh'"
 
       - name: Upload release artifact
-        env:
-          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
-          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
-          DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
-          DEPLOY_WEB_ROOT: ${{ vars.DEPLOY_WEB_ROOT }}
         run: |
           set -euo pipefail
-          PORT="${DEPLOY_PORT:-22}"
-          scp -i ~/.ssh/deploy_key -P "$PORT" -o IdentitiesOnly=yes \
-            release.tar.gz \
-            "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_WEB_ROOT}/releases/release.tar.gz"
+          scp release.tar.gz "deploy:${DEPLOY_WEB_ROOT}/releases/release.tar.gz"
 
       - name: Upload release script
-        env:
-          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
-          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
-          DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
-          DEPLOY_WEB_ROOT: ${{ vars.DEPLOY_WEB_ROOT }}
         run: |
           set -euo pipefail
-          PORT="${DEPLOY_PORT:-22}"
-          scp -i ~/.ssh/deploy_key -P "$PORT" -o IdentitiesOnly=yes \
-            scripts/create-release.sh \
-            "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_WEB_ROOT}/releases/create-release.sh"
+          scp scripts/create-release.sh "deploy:${DEPLOY_WEB_ROOT}/scripts/create-release.sh"
 
       - name: Run release script on server
-        env:
-          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
-          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
-          DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
-          DEPLOY_WEB_ROOT: ${{ vars.DEPLOY_WEB_ROOT }}
-          DEPLOY_KEEP_RELEASES: ${{ vars.DEPLOY_KEEP_RELEASES }}
-          DEPLOY_LS_CACHE_PATH: ${{ vars.DEPLOY_LS_CACHE_PATH }}
         run: |
           set -euo pipefail
-          PORT="${DEPLOY_PORT:-22}"
-          ssh -i ~/.ssh/deploy_key -p "$PORT" -o IdentitiesOnly=yes \
-            "${DEPLOY_USER}@${DEPLOY_HOST}" \
-            "chmod 700 '${DEPLOY_WEB_ROOT}/releases/create-release.sh' && \
+          ssh deploy \
+            "chmod 700 '${DEPLOY_WEB_ROOT}/scripts/create-release.sh' && \
              SITE_ROOT='${DEPLOY_WEB_ROOT}' \
-             KEEP_RELEASES='${DEPLOY_KEEP_RELEASES:-5}' \
-             LS_CACHE_PATH='${DEPLOY_LS_CACHE_PATH}' \
-             bash '${DEPLOY_WEB_ROOT}/releases/create-release.sh' \
+             KEEP_RELEASES='${DEPLOY_KEEP_RELEASES}' \
+             HTDOCS_NAME='${HTDOCS_NAME}' \
+             BLADE_CACHE_PATH='${BLADE_CACHE_PATH}' \
+             FASTCGI_CACHE_PATH='${FASTCGI_CACHE_PATH}' \
+             LS_CACHE_PATH='${LS_CACHE_PATH}' \
+             UPLOADS_PATH='${UPLOADS_PATH}' \
+             LANGUAGES_PATH='${LANGUAGES_PATH}' \
+             RESTART_NGINX_PHPFPM='${RESTART_NGINX_PHPFPM}' \
+             PURGE_LITESPEED='${PURGE_LITESPEED}' \
+             bash '${DEPLOY_WEB_ROOT}/scripts/create-release.sh' \
                '${DEPLOY_WEB_ROOT}/releases/release.tar.gz'"
