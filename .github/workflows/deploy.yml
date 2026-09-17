@@ -15,6 +15,7 @@
 #   FASTCGI_CACHE_PATH       Optional; unset skips FastCGI clear (GleSYS: $DEPLOY_WEB_ROOT/cache/fastcgi)
 #   UPLOADS_PATH             Optional; default $SITE_ROOT/uploads (GleSYS: $DEPLOY_WEB_ROOT/shared/uploads)
 #   LANGUAGES_PATH           Optional; default $SITE_ROOT/languages (GleSYS: $DEPLOY_WEB_ROOT/shared/languages)
+#   FONTS_PATH               Optional; default $SITE_ROOT/fonts (GleSYS: $DEPLOY_WEB_ROOT/shared/fonts)
 #   RESTART_NGINX_PHPFPM     Set to 1 to restart nginx + php8.3-fpm via sudo /etc/init.d (GleSYS)
 #   PURGE_LITESPEED          Set to 1 to run wp litespeed-purge (oderland default 1; leave unset on GleSYS)
 #   CF_CLIENT_ACCESS_ID      Cloudflare Access service token id (staging/production; maps to TUNNEL_SERVICE_TOKEN_ID)
@@ -99,6 +100,7 @@ jobs:
           FASTCGI_CACHE_PATH: ${{ vars.FASTCGI_CACHE_PATH }}
           UPLOADS_PATH: ${{ vars.UPLOADS_PATH }}
           LANGUAGES_PATH: ${{ vars.LANGUAGES_PATH }}
+          FONTS_PATH: ${{ vars.FONTS_PATH }}
           RESTART_NGINX_PHPFPM: ${{ vars.RESTART_NGINX_PHPFPM }}
           PURGE_LITESPEED: ${{ vars.PURGE_LITESPEED }}
           USE_CLOUDFLARED: ${{ inputs.environment == 'staging' || inputs.environment == 'production' }}
@@ -161,6 +163,7 @@ jobs:
             FASTCGI_CACHE_PATH="${FASTCGI_CACHE_PATH:-$EFFECTIVE_ROOT/cache/fastcgi}"
             UPLOADS_PATH="${UPLOADS_PATH:-$EFFECTIVE_ROOT/shared/uploads}"
             LANGUAGES_PATH="${LANGUAGES_PATH:-$EFFECTIVE_ROOT/shared/languages}"
+            FONTS_PATH="${FONTS_PATH:-$EFFECTIVE_ROOT/shared/fonts}"
             RESTART_NGINX_PHPFPM="${RESTART_NGINX_PHPFPM:-1}"
           else
             PURGE_LITESPEED="${PURGE_LITESPEED:-1}"
@@ -179,6 +182,7 @@ jobs:
           validate_abs_path "FASTCGI_CACHE_PATH" "$FASTCGI_CACHE_PATH"
           validate_abs_path "UPLOADS_PATH" "$UPLOADS_PATH"
           validate_abs_path "LANGUAGES_PATH" "$LANGUAGES_PATH"
+          validate_abs_path "FONTS_PATH" "$FONTS_PATH"
           validate_abs_path "DEPLOY_LS_CACHE_PATH" "$DEPLOY_LS_CACHE_PATH"
 
           {
@@ -193,6 +197,7 @@ jobs:
             echo "FASTCGI_CACHE_PATH=$FASTCGI_CACHE_PATH"
             echo "UPLOADS_PATH=$UPLOADS_PATH"
             echo "LANGUAGES_PATH=$LANGUAGES_PATH"
+            echo "FONTS_PATH=$FONTS_PATH"
             echo "RESTART_NGINX_PHPFPM=$RESTART_NGINX_PHPFPM"
             echo "PURGE_LITESPEED=$PURGE_LITESPEED"
             echo "USE_CLOUDFLARED=$USE_CLOUDFLARED"
@@ -277,6 +282,7 @@ jobs:
              LS_CACHE_PATH='${LS_CACHE_PATH}' \
              UPLOADS_PATH='${UPLOADS_PATH}' \
              LANGUAGES_PATH='${LANGUAGES_PATH}' \
+             FONTS_PATH='${FONTS_PATH}' \
              RESTART_NGINX_PHPFPM='${RESTART_NGINX_PHPFPM}' \
              PURGE_LITESPEED='${PURGE_LITESPEED}' \
              bash '${DEPLOY_WEB_ROOT}/scripts/create-release.sh' \

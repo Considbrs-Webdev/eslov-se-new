@@ -15,6 +15,7 @@ set -euo pipefail
 #   CONFIG_PATH             (default: $SITE_ROOT/config)
 #   UPLOADS_PATH            (default: $SITE_ROOT/uploads)
 #   LANGUAGES_PATH          (default: $SITE_ROOT/languages)
+#   FONTS_PATH              (default: $SITE_ROOT/fonts)
 #   BLADE_CACHE_PATH        Cleared if the directory exists (default: $SITE_ROOT/tmp/blade-cache)
 #   FASTCGI_CACHE_PATH      Cleared if set and the directory exists (GleSYS nginx FastCGI cache)
 #   LS_CACHE_PATH           Cleared if set and the directory exists
@@ -95,6 +96,7 @@ HTDOCS_NAME="${HTDOCS_NAME:-htdocs}"
 CONFIG_PATH="${CONFIG_PATH:-$SITE_ROOT/config}"
 UPLOADS_PATH="${UPLOADS_PATH:-$SITE_ROOT/uploads}"
 LANGUAGES_PATH="${LANGUAGES_PATH:-$SITE_ROOT/languages}"
+FONTS_PATH="${FONTS_PATH:-$SITE_ROOT/fonts}"
 BLADE_CACHE_PATH="${BLADE_CACHE_PATH:-$SITE_ROOT/tmp/blade-cache}"
 FASTCGI_CACHE_PATH="${FASTCGI_CACHE_PATH:-}"
 LS_CACHE_PATH="${LS_CACHE_PATH:-}"
@@ -262,6 +264,7 @@ link_if_exists "$CONFIG_PATH" "$TARGET_DIR/config" "config"
 link_if_exists "$CONFIG_PATH/.htaccess" "$TARGET_DIR/.htaccess" ".htaccess"
 link_if_exists "$UPLOADS_PATH" "$TARGET_DIR/wp-content/uploads" "uploads"
 link_if_exists "$LANGUAGES_PATH" "$TARGET_DIR/wp-content/languages" "languages"
+link_if_exists "$FONTS_PATH" "$TARGET_DIR/wp-content/fonts" "fonts"
 
 if [ -d "$TARGET_DIR/wp-content/plugins/advanced-custom-fields-pro" ]; then
   echo "Moving advanced-custom-fields-pro to mu-plugins"
