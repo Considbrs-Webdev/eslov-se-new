@@ -84,7 +84,7 @@ clear_dir_if_inside_site() {
 
   if path_is_inside "$SITE_ROOT" "$path"; then
     echo "Clearing $label: $path"
-    find "$path" -mindepth 1 -xdev -exec rm -rf {} +
+    find "$path" -mindepth 1 -maxdepth 1 -xdev -exec rm -rf {} +
   else
     echo "Skipping $label clear (path outside SITE_ROOT: $path)"
   fi
