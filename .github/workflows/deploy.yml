@@ -1,8 +1,7 @@
 # Manual deploy. Select a GitHub Environment at dispatch time.
 #
 # Shared repo variable: PHP_VERSION
-# Shared repo secret:   ACF_PRO_KEY
-# Shared repo variable: ACF_PRO_URL   (https:// URL registered on that ACF licence)
+# Shared repo secrets:  ACF_PRO_KEY, ACF_PRO_URL (https:// URL registered on that ACF licence)
 #
 # Per-environment variables:
 #   DEPLOY_HOST              SSH hostname (Access hostname on staging/production)
