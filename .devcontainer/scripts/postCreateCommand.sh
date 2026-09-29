@@ -27,14 +27,6 @@ fi
 echo "Checking configuration..."
 echo ""
 
-# Check MUNICIPIO_ACF_PRO_KEY
-if [ -z "$MUNICIPIO_ACF_PRO_KEY" ]; then
-    echo "⚠️  MUNICIPIO_ACF_PRO_KEY is not set"
-    MISSING_CONFIG+=("MUNICIPIO_ACF_PRO_KEY - Required for ACF Pro plugin installation")
-else
-    echo "✓ MUNICIPIO_ACF_PRO_KEY is set"
-fi
-
 # Check MUNICIPIO_GITHUB_TOKEN
 if [ -z "$MUNICIPIO_GITHUB_TOKEN" ]; then
     echo "⚠️  MUNICIPIO_GITHUB_TOKEN is not set"
@@ -51,6 +43,21 @@ else
     # Set the GitHub token for Composer
     composer config github-oauth.github.com $MUNICIPIO_GITHUB_TOKEN 2>/dev/null
     echo "✓ Composer GitHub token configured"
+fi
+
+echo ""
+
+# Check MUNICIPIO_ACF_PRO_KEY
+if [ -z "${MUNICIPIO_ACF_PRO_KEY:-}" ]; then
+    echo "⚠️  MUNICIPIO_ACF_PRO_KEY is not set"
+    MISSING_CONFIG+=("MUNICIPIO_ACF_PRO_KEY - Required for installing ACF Pro via Composer")
+else
+    echo "✓ MUNICIPIO_ACF_PRO_KEY is set"
+
+    # ACF's connect API requires the licence key as basic-auth username and the
+    # registered site URL (with scheme) as the password.
+    composer config http-basic.connect.advancedcustomfields.com "$MUNICIPIO_ACF_PRO_KEY" "http://${LOCAL_SITE_DOMAIN:-localhost:8080}" 2>/dev/null
+    echo "✓ Composer ACF Pro key configured"
 fi
 
 echo ""
