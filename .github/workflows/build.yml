@@ -61,6 +61,24 @@ jobs:
         if: env.YOAST_COMPOSER_TOKEN != ''
         run: composer config --global --auth http-basic.my.yoast.com token "$YOAST_COMPOSER_TOKEN"
 
+      - name: Configure Composer authentication for ACF PRO
+        env:
+          ACF_PRO_KEY: ${{ secrets.ACF_PRO_KEY }}
+          ACF_PRO_URL: ${{ vars.ACF_PRO_URL }}
+        run: |
+          if [ -z "$ACF_PRO_KEY" ] || [ -z "$ACF_PRO_URL" ]; then
+            echo "::error::Repository secret ACF_PRO_KEY and variable ACF_PRO_URL are required. ACF PRO is installed by Composer from connect.advancedcustomfields.com."
+            exit 1
+          fi
+          case "$ACF_PRO_URL" in
+            http://*|https://*) ;;
+            *)
+              echo "::error::ACF_PRO_URL must be the site URL registered on the ACF licence, including the scheme (https://…)."
+              exit 1
+              ;;
+          esac
+          composer config --global --auth http-basic.connect.advancedcustomfields.com "$ACF_PRO_KEY" "$ACF_PRO_URL"
+
       - name: Install composer dependencies
         run: composer install --no-interaction --prefer-dist --no-progress --optimize-autoloader --classmap-authoritative
 
@@ -71,12 +89,6 @@ jobs:
         run: |
           echo "@helsingborg-stad:registry=https://npm.pkg.github.com/helsingborg-stad" >> ~/.npmrc
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> ~/.npmrc
-
-      - name: Download ACF plugin
-        run: |
-          wget "${{ secrets.ACF_URL }}" -O acf.zip
-          unzip -q acf.zip -d wp-content/plugins/
-          rm -f acf.zip
 
       - name: Execute build scripts
         run: php ./build.php --cleanup --no-composer-in-child-packages --install-npm
