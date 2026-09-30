@@ -56,3 +56,13 @@ tools/visual-diff/output/
 tools/visual-diff/pages.generated.json
 tools/visual-diff/playwright-report/
 tools/visual-diff/test-results/
+
+# Local runtime files and generated build output
+/.pnpm-store/
+/backups/
+/cache/
+/logs/
+/composer.versions.md
+
+# Separate repository; version its changes in that repository
+/scripts/schema.org-transformer/
