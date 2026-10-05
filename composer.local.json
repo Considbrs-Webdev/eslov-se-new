@@ -17,11 +17,11 @@
     }
   ],
   "require": {
-    "considbrs-webdev/eslov-customisation": "1.0.3",
+    "considbrs-webdev/eslov-customisation": "1.1.0",
     "considbrs-webdev/eslov-event-review": "dev-main",
     "considbrs-webdev/modularity-arcgis-map": "dev-dev",
     "considbrs-webdev/modularity-noticeboard": "dev-dev",
-    "considbrs-webdev/typesense-search": "1.8.0",
+    "considbrs-webdev/typesense-search": "1.9.0",
     "helsingborg-stad/api-event-manager": "3.18.4",
     "municipio-se/visma-xml-import": "dev-main",
     "wpackagist-plugin/mailpoet": "^5.17",
