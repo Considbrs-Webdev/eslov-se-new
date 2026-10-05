@@ -19,10 +19,10 @@
   "require": {
     "considbrs-webdev/modularity-arcgis-map": "dev-dev",
     "considbrs-webdev/modularity-noticeboard": "dev-dev",
-    "helsingborg-stad/api-event-manager": "3.18.4",
-    "considbrs-webdev/eslov-customisation": "1.0.0",
+    "helsingborg-stad/api-event-manager": "3.19.0",
+    "considbrs-webdev/eslov-customisation": "dev-main",
     "municipio-se/visma-xml-import": "dev-main",
-    "considbrs-webdev/typesense-search": "1.8.0",
+    "considbrs-webdev/typesense-search": "1.9.0",
     "wpackagist-plugin/mailpoet": "^5.17",
     "wpackagist-plugin/two-factor": "^0.9.1"
   }
