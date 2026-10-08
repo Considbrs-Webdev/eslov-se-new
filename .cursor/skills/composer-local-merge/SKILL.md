@@ -3,14 +3,14 @@ name: composer-local-merge
 description: >-
   Add site-specific Composer packages to municipio-deployment via composer.local.json
   and the composer-local-merge.php workflow. Use when adding Eslöv custom plugins,
-  VCS repositories, or require-dev packages to eslov-se-new.
+  VCS repositories, or require-dev packages to this repo.
 ---
 
 # Composer local merge (municipio-deployment)
 
 Custom dependencies for Eslöv go in **`composer.local.json`**, not `composer.json`. Primary use case: register **`eslov-customisation`** as a VCS package when it lives in its own repo.
 
-For local-only development, place the plugin directly in `wp-content/plugins/eslov-customisation/` without Composer — activate with `ddev wp plugin activate eslov-customisation`.
+For local-only development, place the plugin in `wp-content/plugins/eslov-customisation/` and activate it with `wp plugin activate eslov-customisation`.
 
 ## Add a package
 

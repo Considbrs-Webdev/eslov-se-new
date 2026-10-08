@@ -1,109 +1,40 @@
 ---
-name: Eslöv DB migration (LTS → municipio-deployment)
+name: Eslöv site (cutover done)
 overview: >-
-  Import eslov-2026-06-23-77d6623-lean.sql into eslov-se-new, fix boot blockers
-  and data incompatibilities iteratively via eslov-customisation. No LTS plugin
-  porting.
-todos:
-  - id: env-setup
-    content: "ddev start, composer install, activate eslov-customisation, record baseline below"
-    status: pending
-  - id: db-import
-    content: "Import eslov-2026-06-23-77d6623-lean.sql, search-replace URLs, flush cache, export after-import snapshot"
-    status: pending
-  - id: boot-blockers
-    content: "Fix PHP fatals and white screen only — deactivate orphan plugins, missing deps"
-    status: pending
-  - id: municipio-upgrade
-    content: "Run Municipio upgrade routines in admin or WP-CLI; note library/Upgrade/ changes"
-    status: pending
-  - id: modularity-data
-    content: "Transform Modularity module slugs/JSON for deployment module packages"
-    status: pending
-  - id: meta-options
-    content: "Migrate post meta keys, options, ACF references identified in breakage matrix"
-    status: pending
-  - id: search-media
-    content: "Reindex search (Algolia/Typesense), verify uploads/S3 paths"
-    status: pending
-  - id: visual-pass
-    content: "Walk key page types; fill Severity/Status on matrix rows"
-    status: in_progress
-  - id: shim-audit
-    content: "Review runtime shims — convert to one-time migrations where possible"
-    status: done
-isProject: true
+  Production is live on standard Municipio, not LTS. wp eslov migrate is
+  frozen. New breakage is logged under Post-cutover breakage and fixed in
+  eslov-customisation without new migrate commands.
+isProject: false
 ---
 
-# Eslöv DB migration — living checklist
+# Eslöv DB migration — historical checklist
 
-**Strategy:** Import `eslov-2026-06-23-77d6623-lean.sql` → fix errors iteratively → all code in `eslov-customisation`.
+**Status (2026-10-08):** Production is deployed. The LTS cutover is done. This site is standard Municipio, not LTS.
 
-**Agent skills:** `eslov-migration-workspace`, `eslov-adaptation-plugin`, `municipio-framework`, `ddev-wp-cli`
+`wp eslov migrate` is a frozen record of that cutover. Keep the commands. Do not add new ones, and do not re-run `migrate all` to fix bugs found after go-live.
 
-### Project preference: migrate data, not legacy shims
+The phases and breakage matrix below are the cutover log. New bugs go in **Post-cutover breakage**.
 
-**Default fix:** rewrite imported DB data (WP-CLI one-time migration) so it matches **new Municipio / Modularity expectations**. After migration, the site should run on standard theme/module code without reading legacy meta keys or LTS-only field shapes at runtime.
+## Post-cutover breakage
 
-**Avoid:** permanent runtime shims that translate old LTS data on every request. Treat shims as temporary bridges only — convert to migrations during the shim-audit phase, or delete once data is transformed.
+Bugs that show up in production because the cutover script never covered them. Fix them in `eslov-customisation` as ordinary site code. Do not fold the fix into `wp eslov migrate`.
 
-**Still valid without migration:** upstream core bugs (patch/shim until upstream fix), ongoing **site preferences** (filters that are not data transforms), missing modules forked in `eslov-customisation`, and editor UI that extends standard ACF (not a DB rewrite).
-
-When proposing a fix, state why migration is or is not feasible before adding a shim.
+| # | Error / symptom | Page / context | Cause | Fix | Status |
+|---|-----------------|----------------|-------|-----|--------|
+| | | | | | |
 
 ---
 
+**Historical strategy (do not resume):** one-time data rewrites during cutover, all site code in `eslov-customisation`.
 
+**Agent skills:** `eslov-adaptation-plugin`, `municipio-framework`
 
-## Baseline
+### Historical preference (cutover only)
 
-Record when starting (update after each fresh import):
-
-
-| Item                                 | Value                                                                                               |
-| ------------------------------------ | --------------------------------------------------------------------------------------------------- |
-| Reference DB file                    | `eslov-2026-06-23-77d6623-lean.sql` (~610 MB, MariaDB 11.8 lean)                                    |
-| Lean omissions                       | `*_aryo_activity_log` (incl. failed logins), Action Scheduler, mail/404/audit logs — structure only |
-| Dump `siteurl`                       | `https://storatorg.eslov.w8e.se`                                                                    |
-| Import date                          | 2026-08-07 (fresh lean dump → URL/multisite fixes → `migrate all --network`)                        |
-| Post-import snapshot                 | `after-import.sql.gz` (local, gitignored; taken before migrate all)                                 |
-| `helsingborg-stad/municipio` version |                                                                                                     |
-| WordPress version                    |                                                                                                     |
-| Site boots without fatal?            | Yes (front 200; admin redirects to login)                                                           |
-| eslov-customisation active?          | Yes (network-activated 2026-08-07 after import)                                                     |
-
+During cutover, the default was a one-time `wp eslov migrate` rewrite so new Municipio could read the imported data. That preference applied to the frozen suite below. It does not apply to bugs found after go-live — those are fixed in runtime code, or as a narrow data repair that is not added to the migrate registry.
 
 ---
 
-
-
-## Phase 0 — Environment
-
-- [ ] `cd eslov-se-new && ddev start`
-- [ ] `composer install` (merge script runs automatically)
-- [x] Scaffold / activate `eslov-customisation`
-- [ ] Copy `config-example/` → `config/` if not done
-- [ ] Confirm site loads on fresh DB before prod import
-
-
-
-## Phase 1 — Database import
-
-Reference dump: `eslov-2026-06-23-77d6623-lean.sql` (repo root, ~610 MB, not in git). Lean export: log/audit/cache table data omitted (Aryo Activity Log incl. failed-login rows; Action Scheduler; etc.) — content and module data intact.
-
-- [ ] Confirm `eslov-2026-06-23-77d6623-lean.sql` is present at repo root
-- [ ] `ddev import-db --file=eslov-2026-06-23-77d6623-lean.sql`
-- [ ] `ddev wp search-replace 'https://storatorg.eslov.w8e.se' 'https://eslov-se-new.ddev.site' --all-tables`
-- [ ] `ddev wp search-replace 'https://eslov.se' 'https://eslov-se-new.ddev.site' --all-tables`
-- [ ] **Multisite domains** — update `eslovwp1_site` + `eslovwp1_blogs` (see `ddev-wp-cli` skill)
-- [ ] **siteurl** `/wp` **suffix** — `siteurl` must be `{home}/wp` on every blog or login loops (form posts to redirect stub)
-- [ ] Confirm `config/multisite.php` has `SUBDOMAIN_INSTALL true`
-- [ ] **DDEV subsite routing** — add `additional_hostnames: ["*.eslov-se-new"]` in `.ddev/config.yaml`, run `ddev restart`
-- [ ] `ddev wp cache flush`
-- [ ] `ddev wp rewrite flush`
-- [ ] **Remote media** — `cp .ddev/env/remote-media.env.example .ddev/env/remote-media.env && ddev restart` (proxies `/app/uploads/` from `eslov.se`; no local uploads copy)
-- [ ] Export snapshot: `ddev export-db --file=after-import.sql.gz`
-- [ ] Note first error (fatal, warning, or blank module)
 
 
 
@@ -112,20 +43,21 @@ Reference dump: `eslov-2026-06-23-77d6623-lean.sql` (repo root, ~610 MB, not in 
 Fix only what prevents the site from loading. No visual polish.
 
 - [ ] Read `wp-content/debug.log`
-- [ ] `ddev wp plugin list --status=active` — deactivate plugins not in deployment
+- [ ] `wp plugin list --status=active` — deactivate plugins not in deployment
 - [ ] Check Municipio `library/Upgrade/` for pending migrations
 
-- `ddev wp eslov migrate modularity-upgrade --network` — or included in `migrate all --network` (see **Modularity upgrade** below)
+- `wp eslov migrate modularity-upgrade --network` — or included in `migrate all --network` (see **Modularity upgrade** below)
+- `wp eslov migrate municipio-upgrade --network` — or included in `migrate all --network` (see **Municipio upgrade** below). Must run **before** `design-tokens` so V41 cannot clobber patched tokens on the first page view.
 
 - [ ] Site loads admin + front page?
 
 
 
-### Modularity upgrade (`ddev wp eslov migrate modularity-upgrade --network`)
+### Modularity upgrade (`wp eslov migrate modularity-upgrade --network`)
 
 Runs upstream Modularity V5→V8 migrations (module post types, grid classes, manual-input repeater, etc.) on **each site in the network**. Wraps `Modularity\Upgrade::upgrade()` — upstream `wp modularity upgrade` has no `--network` flag.
 
-Also runs as the first step of `ddev wp eslov migrate all --network` (`run_order` 5).
+Also runs as the first step of `wp eslov migrate all --network` (`run_order` 5).
 
 **Upstream bug (shim):** `AcfModuleMigrationHandler::migrateFieldByType()` declared `: bool` but `update_field()` can return an `int` meta ID on first write. `ModularityUpgradeRunner` preloads a patched handler from `eslov-customisation` before `Upgrade::upgrade()` (same pattern as `MunicipioTermCacheFix`). Remove shim when upstream ships the bool cast.
 
@@ -137,7 +69,22 @@ Also runs as the first step of `ddev wp eslov migrate all --network` (`run_order
 
 **Success:** `Success: Database migration complete; upgraded to version 8.`
 
-### Manual-input data repair (`ddev wp eslov migrate manual-input-data-repair --network`)
+### Municipio upgrade (`wp eslov migrate municipio-upgrade --network`)
+
+Runs pending Municipio theme DB upgrades (V41 Kirki→design tokens, V42/V43 native fonts, …) on **each site in the network**. Wraps `Municipio\Upgrade::initUpgrade()`.
+
+Upstream only hooks `wp`, which **never fires in WP-CLI**. After a fresh import `municipio_db_version` is still 29; the first browser request then runs V41 and **replaces** `theme_mod('tokens')` with the V4.1 map (no footer link contrast, default heading weights). That is why footer/plus colors looked wrong until `design-tokens --force` was run a second time.
+
+Also runs in `wp eslov migrate all --network` (`run_order` 7, before `design-tokens`). `migrate all` always passes `--force` to `design-tokens` so V41 leftovers are overwritten in the same pass.
+
+```bash
+wp eslov migrate municipio-upgrade --dry-run --network
+wp eslov migrate municipio-upgrade --network
+```
+
+**Success:** `Municipio database upgraded from version 29 to 43.` (or skipped if already at target).
+
+### Manual-input data repair (`wp eslov migrate manual-input-data-repair --network`)
 
 One-time repair for former `mod-posts` + `posts_data_source=input` modules where LTS `data_*` still has content missing from `manual_inputs` after upstream V5 upgrade. Runs at `run_order` 6 (after `modularity-upgrade` in `migrate all`).
 
@@ -146,17 +93,17 @@ One-time repair for former `mod-posts` + `posts_data_source=input` modules where
 **Local result (2026-08-05):** 17 modules repaired on main site + 1 on foretag subsite; ~17 row-loss modules skipped (prefix title mismatch — rows realigned or edited post-migration). Index-origin empty modules remain out of scope.
 
 ```bash
-ddev wp eslov migrate manual-input-data-repair --dry-run --network
-ddev wp eslov migrate manual-input-data-repair --network
-ddev wp eslov migrate manual-input-data-repair --post-id=29223
+wp eslov migrate manual-input-data-repair --dry-run --network
+wp eslov migrate manual-input-data-repair --network
+wp eslov migrate manual-input-data-repair --post-id=29223
 ```
 
 ## Phase 3 — Data migration (iterative)
 
 Work the breakage matrix below. One row per fix.
 
-- [ ] `ddev wp eslov migrate all --network --dry-run` then `ddev wp eslov migrate all --network` (every blog in the network; network-activates `eslov-customisation`)
-- [ ] Or per task: `ddev wp eslov migrate design-tokens --network`
+- [ ] `wp eslov migrate all --network --dry-run` then `wp eslov migrate all --network` (every blog in the network; network-activates `eslov-customisation`)
+- [ ] Or per task: `wp eslov migrate design-tokens --network`
 - [ ] Modularity module slug/JSON transforms
 - [ ] Job listing post meta / templates
 - [ ] Legacy options and theme mods
@@ -189,7 +136,7 @@ Work the breakage matrix below. One row per fix.
 
 ```bash
 cd tools/visual-diff
-npm run run:docker                    # capture prod + DDEV, diff, open output/{run}/index.html
+npm run run:docker                    # capture production and the local site, diff, open output/{run}/index.html
 npm run triage -- --run={run} --write # optional per-run triage.json
 ```
 
@@ -227,7 +174,7 @@ Add a row for every error fixed. Agents: update Status when done.
 | 2b  | Subsites stuck at `modularity_db_version` 5 after import                                                                                                                  | Multisite subsites                                                                                                                | Upstream `wp modularity upgrade` is per-site only (no `--network`)                                                                                                                                                                                                                                                                                                                                                                 | migrate          | `wp eslov migrate modularity-upgrade --network` (also first step of `migrate all --network`)                                                                                                                                                                                                                                                                                                     | done    |
 | 2c  | mod-posts cards abnormally tall on subsites (e.g. programforoffentligmiljo.eslov.se)                                                                                      | Subsite mod-posts index/card layouts                                                                                              | Subsites still on Modularity v5 module data until network upgrade runs                                                                                                                                                                                                                                                                                                                                                             | migrate          | Same as 2b — `wp eslov migrate modularity-upgrade --network`; card height normal after v8 module field migration                                                                                                                                      
 | 2d  | mod-posts segment slider cards very tall (empty white content panel)                                                                                                      | e.g. programforoffentligmiljo homepage (`posts_display_as=segment` + `show_as_slider`)                                            | Styleguide sets `--c-segment--min-height-card: 560px` for all `.c-slider .c-segment--card`; white panel `flex-grow`s to fill. LTS used content-sized MXUI cards                                                                                                                                                                                                                                                                    | shim             | `site-overrides.scss` → `posts-slider-segments.scss`: unset token for `.c-slider--post` only                                                                                                                                                         |                                                                                                                                            | done    |
-| 3   | Broken images locally without full `uploads/` copy                                                                                                                        | Front / admin media                                                                                                               | DB uses `/app/uploads/` (LTS); prod files on `eslov.se`                                                                                                                                                                                                                                                                                                                                                                            | config           | DDEV `ddev-remote-media.php` + nginx uploads proxy                                                                                                                                                                                                                                                                                                                                               | done    |
+| 3   | Broken images locally without full `uploads/` copy                                                                                                                        | Front / admin media                                                                                                               | DB uses `/app/uploads/` (LTS); prod files on `eslov.se`                                                                                                                                                                                                                                                                                                                                                                            | config           | local uploads proxy to production                                                                                                                                                                                                                                                                                                                                               | done    |
 | 4   | `mod-navigation` modules blank / missing in editor                                                                                                                        | ~52 module posts (children/menu/manual sources)                                                                                   | LTS `municipio-extended` ModNavigation only; views use `tailwind` + `mxui.*`                                                                                                                                                                                                                                                                                                                                                       | config           | `eslov-customisation`: `Modules/Navigation` + `AcfFields/ModNavigationFields` + Municipio components (no DB migration)                                                                                                                                                                                                                                                                           | done    |
 | 4b  | `mod-navigation` layout wrong (single-column cards; footer bar empty)                                                                                                     | Homepage grid blocks (457769); footer widget bar (458006)                                                                         | Blade used stacked `@card` without `o-grid-4@md` / `c-card--flat`; bar used `@card` icon cells (broken on primary bg)                                                                                                                                                                                                                                                                                                              | config           | `Modules/Navigation/views`: `grid/blocks`, `grid/default`, `cards`, `bar/solid`, `bar/outline` — `o-grid` + flat cards; bar → flex `@icon` + link                                                                                                                                                                                                                                                | done    |
 | 4c  | Footer bar icons/text black on primary purple                                                                                                                             | Bar module 458006 (`format=bar`, solid)                                                                                           | Layer/hover + layout drift from LTS                                                                                                                                                                                                                                                                                                                                                                                                | config           | LTS-parity bar: `li.contents`, grid link, 54px icon wrap, hover on link, `@layer theme` CSS                                                                                                                                                                                                                                                                                                      | done    |
@@ -244,6 +191,7 @@ Add a row for every error fixed. Agents: update Status when done.
 | 8d  | LTS "Kort och lista" (`posts_display_as = mixed`) posts modules render as list                                                                                            | ~25 mod-posts with Eslöv `municipio-extended` mixed layout                                                                        | `mixed` not in Municipio allowed templates → falls back to `list`                                                                                                                                                                                                                                                                                                                                                                  | migrate          | `wp eslov migrate mod-posts-mixed-display` → `index` + `show_as_slider` + `posts_columns = grid-md-4`                                                                                                                                                                                                                                                                                            | done    |
 | 8   | `Term::getTermColor(): Return value must be of type string|false, array returned`                                                                                         | mod-posts segment/card; posts with taxonomy term icons (Navet, anslagstyp)                                                        | Municipio core: `getTermIcon()` and `getTermColor()` share one static `Term::$cache` with identical keys; `TermIconResolver` calls both in sequence                                                                                                                                                                                                                                                                                | shim             | `eslov-customisation`: preload `Shim/Municipio/Helper/Term/Term.php` via `MunicipioTermCacheFix` (separate `$iconCache` / `$colorCache`); no DB migration                                                                                                                                                                                                                                        | done    |
 | 9   | Header tab links font-weight 500 vs prod 700; header default/basic buttons black on primary bg; header sm search submit square right; footer widget links dark on #2d2d2d | Header tabs; Meny button; `#header-search-form` sm field+submit; footer widget plain `<a>`                                        | V4.1 skipped typography/search tokens; scoped header button tokens lose to `.c-button`; `@group` child-normalization zeros direct-child `border-radius` on submit (field inner keeps radius); styleguide never consumes `--c-search-form-border-radius`; generic `a:not([class^=c-])` link rule (later in cascade) beats `.c-footer a` so `--c-link-link-color-mix` uses `--color--background-contrast` (#000) not footer contrast | migrate + config | `wp eslov migrate design-tokens` (SearchFormShapeCorrection, FooterLinkContrastCorrection, PrimaryPaletteCorrection); blade `c-group--skip-child-normalization` on search `@group`; `components/search-forms.scss` consumes `--c-search-form-border-radius`; `components/header-buttons.scss` for basic buttons                                                                                  | done    |
+| 9b  | Footer / plus-site colors wrong after `migrate all`; OK only after a second `design-tokens --force`                                                                       | Main footer links; plus.eslov.se                                                                                    | Municipio V41–V43 run on the `wp` hook (browser only). CLI `design-tokens` patched tokens first; first page view then ran V41 and replaced `theme_mod('tokens')`. `--force` on `migrate all` also aborted at `one-page-content` (unknown flag).                                                                                                                                                                                      | migrate          | `wp eslov migrate municipio-upgrade --network` (`run_order` 7, before design-tokens). `migrate all` always `--force`s design-tokens; other `--force` only for commands that declare `SUPPORTS_FORCE_FLAG` (not a hardcoded allowlist).                                                                                                                                                           | done    |
 | 10  | Mobile drawer / sidebar submenus not indented; missing `c-nav--indent-sublevels` padding                                                                                  | Header mobile menu drawer; sidebar vertical nav                                                                                   | LTS import has no `vetical_menu_indent_sublevels` theme mod (Municipio default false); reference sites (e.g. helsingborg.se) enable Customizer “Indent each level”                                                                                                                                                                                                                                                                 | migrate          | `wp eslov migrate theme-mods` → `vetical_menu_indent_sublevels` = true                                                                                                                                                                                                                                                                                                                           | done    |
 | 11  | Typographic scale one step too large vs prod (headings/body feel oversized)                                                                                               | Design Builder → Typografisk skala                                                                                                | Municipio V4.1 `MapThemeModsToDesignTokens` hardcodes `--font-size-scale-ratio` = `1.200` (Liten ters); prod match is `1.125` (Stor sekund / Major Second)                                                                                                                                                                                                                                                                         | migrate          | `wp eslov migrate design-tokens` → `FontSizeScaleRatioCorrection` replaces V4.1 default `1.200` with `1.125`                                                                                                                                                                                                                                                                                     | done    |
 | 12  | Search field radius wrong on non-pill subsites (e.g. plus.eslov.se); pill sites OK                                                                                        | `#header-search-form`, `#hero-search-form` field inner                                                                            | `SearchFieldBorderRadiusCorrection` set scoped `--c-field--border-radius: 4` on all blogs, ignoring legacy `field_appearance_type` + Kirki default `field_border_radius=0`; pill sites masked by `--c-search-form-border-radius: 100px`                                                                                                                                                                                            | migrate          | `wp eslov migrate design-tokens --network` → `FieldBorderRadiusCorrection` maps legacy `field_border_radius` to `__general__` (default `0` when custom appearance); removes erroneous scoped tokens; pill search still via `SearchFormShapeCorrection` + `search-forms.scss`                                                                                                                     | done    |
@@ -254,6 +202,7 @@ Add a row for every error fixed. Agents: update Status when done.
 | 17  | Tree highlighted: tall `@card` 16:9 + 56px child-link gaps vs LTS compact horizontal row                                                                                  | `mod-navigation` tree `highlighted` (e.g. akut hjälp hubs)                                                                        | `@card` stacked layout + `column-gap: calc(var(--base) * 7)`; LTS subgrid `gap-7` (~28px), fixed 200px image, plain underlined child links                                                                                                                                                                                                                                                                                         | config           | Custom horizontal grid in `tree/highlighted.blade.php`; `mod-navigation.scss` tree layout; `ItemResolver` uses `tree` image context; standard tree → fixed 180px image + `@link` children                                                                                                                                                                                                        | done    |
 | 18  | `[modularity id="…"]` shortcodes embedded in Text modules render empty                                                                                                    | `mod-text` content with nested module shortcodes                                                                                  | Municipio 7 strips `[modularity]` in `Modularity/Display/SanitizeContent` before `the_content`; LTS rendered nested modules via `do_shortcode()` in Text content                                                                                                                                                                                                                                                                   | shim             | `NestedModularityShortcodes` placeholders at `SanitizeContent` priority 9; expand after `wpautop` (`the_content` 12 + `mod-text/viewData`); recursion guard                                                                                                                                                                       | done    |
 | 18b | Nested mod-posts cards/tags jumbled inside Text modules (e.g. utveckla `/teman/bostader/`)                                                                                | `mod-text` 12335 wrapping `mod-posts` 267 / 7116                                                                                  | Shim expanded shortcodes *before* `the_content`; `wpautop` then inserted `<br>`/`</p>` into `.c-card` / `.c-tags` markup. Not a missing-CSS enqueue. LTS order was wpautop then `do_shortcode`.                                                                                                                                                                                                                                  | shim             | Same `NestedModularityShortcodes` — placeholders through sanitizer + `wpautop`, restore afterwards                                                                                                                                                                                                                              | done    |
+| 18c | `[modularity id="…"]` shortcodes in Manual input row content render empty                                                                                                 | `mod-manualinput` WYSIWYG `manual_inputs` → `content` (`field_64ff231ed91b9`)                                                     | Modularity strips `[modularity]` on `acf/format_value/type=wysiwyg` priority 9 before `acf_the_content`. Migration rejected: stored shortcode is the source of truth (baked HTML would go stale); lifting shortcodes into real placements is the same optional later migration as row 18.                                                                                                                                                                                            | shim             | `NestedModularityShortcodes` placeholders at `acf/format_value/type=wysiwyg` priority 8 (that field only); expand after `wpautop` on `acf_the_content` priority 12; recursion guard                                                                                                                                                                                                              | done    |
 | 19  | Hard to spot visual discrepancies vs prod during migration                                                                                                                | Phase 5 page types                                                                                                                | No in-repo visual regression tooling; manual eyeballing only                                                                                                                                                                                                                                                                                                                                                                       | config           | `tools/visual-diff/` Playwright harness + `pages.json` reference set + `triage-baseline.json`; run via `npm run run:docker`                                                                                                                                                                                                                                                                      | done    |
 | 20  | Search results page visually incomparable locally                                                                                                                         | `/?s=skola`                                                                                                                       | Algolia/Typesense not reindexed after import (Phase 4)                                                                                                                                                                                                                                                                                                                                                                             | drop             | Defer to Phase 4 `Search reindex`; header search CSS/tokens rows 9/12/15 already done                                                                                                                                                                                                                                                                                                            | wontfix |
 | 21  | News/events archives high pixel diff                                                                                                                                      | `/nyheter/`, plus `/evenemang/`                                                                                                   | Dynamic post/event counts differ prod vs local snapshot                                                                                                                                                                                                                                                                                                                                                                            | drop             | Not a layout regression — use static module pages for CSS parity checks                                                                                                                                                                                                                                                                                                                          | wontfix |
@@ -271,8 +220,9 @@ Add a row for every error fixed. Agents: update Status when done.
 | 31  | plus.eslov.se missing polka-stripe site border after migration                                                                                                            | plus.eslov.se (blog 16)                                                                                                           | LTS `ws-branded-border` plugin not in deployment; per-site theme_mods (`whitespace_branded_border_*`) already imported                                                                                                                                                                                                                                             | config           | `eslov-customisation`: `Customisations/BrandedBorder` — Customizer section under `municipio_customizer_panel_design`, legacy theme_mod keys, CSS in `branded-border.scss`                                                                                                                                                                                                                         | done    |
 | 32  | Posts/manual slider prev/next stay clickable at ends                                                                                                                      | Slider with external prev/next arrows                                                                                             | Styleguide Splide has no arrow disable logic on custom buttons                                                                                                                                                                                                                                                                                                                                     | config           | `SiteScripts` + Vite `source/js/components/slider-nav-state.js` — sets `disabled` / `aria-disabled` from Splide index on `slider:ready`                                                                                                                                                                                           | done    |
 | 33  | Accordion focus has no ring around the item (Contacts Öppettider; Manual Input accordion)                                                                                 | `c-accordion__item` `summary` inside `@card` (mod-contacts Person; mod-manualinput accordion)                                     | Styleguide v3 has no item focus ring; global `:focus-visible` outline is clipped by `contain: paint` on accordion + `.c-card__paint-container`; card also zeros `--inherit-outline-width`                                                                                                                                                                                                           | config           | `site-overrides.scss` → `components/accordion.scss` — inset `box-shadow` on `:focus-visible` only; remove when upstream ships an inset item ring                                                                                                                                                                                 | done    |
-| 34  | Slider prev/next hang outside the slider box (`left/right: calc(var(--c-slider--base) * -1.5)`)                                                                            | e.g. [Ensamhet – Barn](https://eslov-se-new.ddev.site/omsorg-stod/soc-din-vag-till-stod/ensamhet/ensamhet-barn/) `.c-slider__arrow` | Styleguide component SCSS bakes arrow offset as a Sass multiplier of `--c-slider--base`; no design-builder token for inset. Default hangs outside; container ≥640px insets `* 2.5`                                                                                                                                                                                                                | config           | `site-overrides.scss` → `components/slider-arrows.scss` in `@layer theme` (beats `@layer components`); `left`/`right: 0`                                                                                                                                                                                                          | done    |
-| 35  | Customizer font (Montserrat) not applied on frontend                                                                                                                       | Design Builder body/heading font; homepage typography                                                                             | LTS stored uploaded slug `montserrat-variablefont_wght`; V41 copied it into `tokens`; V42/V43 Global Styles post has no `wp_theme` term (`tax_input` dropped as user 0) so `wp_print_font_faces()` is empty; woff2 files missing locally. Staging: GS JSON can have Montserrat while the page prints none — WP ignores user GS without `isGlobalStylesUserThemeJSON`, and looks up the newest `wp_theme=municipio` post (not `post_name`). | migrate          | `wp eslov migrate fonts --network` — map slug → `"Montserrat", sans-serif`, install Google Montserrat into native font library, write fonts onto the GS post WP actually queries, persist `isGlobalStylesUserThemeJSON`. DDEV uploads proxy `try_files` local `uploads/fonts/` first.                                            | done    |
+| 34  | Slider prev/next hang outside the slider box (`left/right: calc(var(--c-slider--base) * -1.5)`)                                                                            | e.g. [Ensamhet – Barn](https://eslov.se/omsorg-stod/soc-din-vag-till-stod/ensamhet/ensamhet-barn/) `.c-slider__arrow` | Styleguide component SCSS bakes arrow offset as a Sass multiplier of `--c-slider--base`; no design-builder token for inset. Default hangs outside; container ≥640px insets `* 2.5`                                                                                                                                                                                                                | config           | `site-overrides.scss` → `components/slider-arrows.scss` in `@layer theme` (beats `@layer components`); `left`/`right: 0`                                                                                                                                                                                                          | done    |
+| 35  | Customizer font (Montserrat) not applied on frontend                                                                                                                       | Design Builder body/heading font; homepage typography                                                                             | LTS stored uploaded slug `montserrat-variablefont_wght`; V41 copied it into `tokens`; V42/V43 Global Styles post has no `wp_theme` term (`tax_input` dropped as user 0) so `wp_print_font_faces()` is empty; woff2 files missing locally. Staging: GS JSON can have Montserrat while the page prints none — WP ignores user GS without `isGlobalStylesUserThemeJSON`, and looks up the newest `wp_theme=municipio` post (not `post_name`). | migrate          | `wp eslov migrate fonts --network` — map slug → `"Montserrat", sans-serif`, install Google Montserrat into native font library, write fonts onto the GS post WP actually queries, persist `isGlobalStylesUserThemeJSON`. A local uploads proxy serves on-disk `uploads/fonts/` before production.                                            | done    |
+| 35b | Native font `@font-face` src still on production/dump host after import                                                                                                   | `wp_font_face` posts; Global Styles custom families; after `municipio-upgrade` V42/V43                                            | V42/V43 and font sideload store absolute `src` URLs. `wp search-replace` can miss JSON in `post_content`; leftover faces keep the dump host.                                                                                                                                                                                                                                                       | migrate          | `wp eslov migrate fonts` → `NativeFontLibraryMigrator::rewriteFontSourcesToCurrentSite()` rewrites `wp_font_face` + Global Styles `src` onto `content_url()` for the current blog                                                                                                                                                 | done    |
 | 36  | Split/card section Text is a plain textarea; editors cannot edit stored HTML without writing tags                                                                         | `mod-section-split` / featured (`field_60d1a8040b829`), `mod-section-card` (`field_63ff1e7124e0e`); full-width already wysiwyg but basic toolbar | Upstream split/card Text is textarea since 2021; LTS `municipio-extended` forced wysiwyg + full toolbar. ~86% of Eslöv split/featured `text` values contain HTML. Not migratable — meta key stays `text`; this is editor UI. Saving a textarea can also strip HTML.                                                                                                                                                                 | shim             | `SectionModuleWysiwyg` on `acf/load_field` for the three LTS keys (split/featured + card → wysiwyg full in admin/AJAX/REST only; full-width toolbar `basic` → `full`). Frontend keeps textarea formatting so stored HTML is not wpautop'd.                                                                                         | done    |
 
 
@@ -304,7 +254,7 @@ Runtime shims that remain after migration (aim to keep this list short):
 | Preload patched `AcfModuleMigrationHandler` (`ModularityUpgradeRunner`)                   | Upstream Modularity upgrade bool return type vs ACF `update_field()` int      | After upstream Modularity ships bool cast on migrator returns                                                    |
 | `site-overrides.scss` → `event-cards.scss`                                               | `api-event-manager-integration` index cards missing `c-card__paint-container` | After new Gutenberg event integration replaces `mod-event` index                                                 |
 | `site-overrides.scss` → `posts-slider-segments.scss`                                     | Styleguide 560px min-height on segment-in-slider vs LTS content-sized cards   | After upstream styleguide scopes 560px away from `c-slider--post` (or display_as change)                         |
-| `Modularity/Display/SanitizeContent` priority 9 + `the_content` 12 + `mod-text/viewData` → `NestedModularityShortcodes` | LTS Text `wpautop` then `do_shortcode()` for nested `[modularity id="…"]` | Optional: if content is later migrated to native module layout/container data                                    |
+| `Modularity/Display/SanitizeContent` priority 9 + `the_content` 12 + `mod-text/viewData` + `acf/format_value/type=wysiwyg` priority 8 + `acf_the_content` 12 → `NestedModularityShortcodes` | LTS Text and Manual input content: `wpautop` then `do_shortcode()` for nested `[modularity id="…"]` | Optional: if content is later migrated to native module layout/container data                                    |
 | `Modularity/Display/mod-manualinput/viewData` → `ManualInputLinkNormalize`               | LTS ManualInput `link['url']` normalize (dropped upstream)                    | After upstream Modularity restores link normalize or components accept ACF link arrays                           |
 | `SiteScripts` (`source/js/site.js` → `slider-nav-state.js`)                              | No styleguide arrow disable on custom prev/next                               | Permanent — depends on `js-styleguidejs` `slider:ready`                                                          |
 | `site-overrides.scss` → `accordion.scss`                                                 | Styleguide v3 accordion has no item ring; outset outline clipped by `contain: paint` | After upstream accordion ships an inset focus ring                                                    |
@@ -323,7 +273,7 @@ Runtime shims that remain after migration (aim to keep this list short):
 | `ModPostsTaxonomyFiltering` + ACF fields          | No             | **Keep** — permanent Eslöv editor feature (multi-tax AND/NOT IN)                                     |
 | `ModPostsHideTermIcons` / `PostObjectWithoutIcon` | No             | **Keep** until Municipio adds hide-icon setting + fixes `BackwardsCompatiblePostObject` commentCount |
 | `MunicipioTermCacheFix`                           | No             | **Keep** — upstream Municipio cache collision bug                                                    |
-| `NestedModularityShortcodes`                      | Maybe          | **Keep for now** — optional future content migration off nested shortcodes                           |
+| `NestedModularityShortcodes`                      | Maybe          | **Keep for now** — text modules and manual input content; optional future migration off nested shortcodes |
 | `event-cards.scss`                                | No             | **Keep** until Gutenberg event integration replaces `mod-event` index                                |
 | `TopSidebarLayout`                                | No             | **Keep** — layout/CSS preference for top-sidebar band; not a meta key transform                      |
 | `ManualInputLinkNormalize`                        | No             | **Keep** — upstream regression; ACF link fields must remain arrays in DB (2026-08-03)                |
@@ -404,7 +354,7 @@ LTS `municipio-extended` features restored in `eslov-customisation` (owned `.esl
 
 | Feature                      | LTS source                       | Trigger                                                                         | Render                                                                                    |
 | ---------------------------- | -------------------------------- | ------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| Child page pills below title | `autoload/button-navigation.php` | `secondary_navigation_position` = `below_title`, not `page_hide_secondary_menu` | `ChildPageLinksBelowTitle` → `@button` (secondary, filled)                                |
+| Child page pills below title | `autoload/button-navigation.php` | `secondary_navigation_position` = `below_title`, not `page_hide_secondary_menu` | `ChildPageLinksBelowTitle` → `@button` (secondary, filled). **One Page deferred** — see `.cursor/plans/one-page-child-page-buttons.md` |
 | Taxonomy term pills          | `autoload/post.php`              | Per CPT theme mods `…_taxonomies` + `…_taxonomy_placement` (unset → all public taxonomies) | `TaxonomyTaglist` → `.eslov-article-taglist` (term `colour` left bar; `href` only when `redirect_to` set) |
 | Singular taxonomy Customizer | `autoload/mxui.php`              | Appearance → **Taxonomier på enskilda inlägg**                                  | `SingularTaxonomyCustomizer` — vanilla WP Customizer, same LTS theme_mod keys             |
 | Term redirect URL            | `autoload/post.php`              | Term edit → Advanced term settings                                              | `TermRedirectToField` — ACF link `redirect_to` on `group_63e6002cc129c`                  |
@@ -420,14 +370,6 @@ LTS `municipio-extended` features restored in `eslov-customisation` (owned `.esl
 
 **Verify:** [Kartor, adresser och mätning](https://eslov.se/bygga-bo-miljo/kartor-adresser-och-matning/) (child pills); nyheter single with ämne; utveckla projekt single (e.g. Upprustning av stationsområdet i Örtofta — pills for teman/plats/status/dialog when theme mod unset).
 
+**Deferred (owner, 2026-09-25):** child-page buttons on the One Page template. Standard article templates already render them. Write-up: `.cursor/plans/one-page-child-page-buttons.md`. Example: [I Eslövs tätort](https://eslov.se/utbildning-barnomsorg/forskola/forskolor/i-eslovs-tatort/).
+
 ---
-
-
-
-## Rollback
-
-```bash
-ddev import-db --file=after-import.sql.gz   # or earlier snapshot
-ddev wp cache flush
-```
-

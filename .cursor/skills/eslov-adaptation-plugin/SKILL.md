@@ -1,103 +1,59 @@
 ---
 name: eslov-adaptation-plugin
 description: >-
-  Build and extend eslov-customisation — the single plugin for Eslöv DB migration
-  (WP-CLI commands) and runtime shims. Covers migrate-once vs hook-forever, plugin
-  structure, and logging fixes. Use when fixing post-import errors or adding
-  data transforms.
+  Extend eslov-customisation for the live Eslöv Municipio site. Production
+  cutover is done. Fix newly found breakage here (hooks, views, CSS, narrow
+  data repairs). Do not add wp eslov migrate commands; that CLI is frozen.
 ---
 
 # eslov-customisation (adaptation plugin)
 
-All Eslöv-specific migration and adaptation code lives in **one plugin**, similar to Piteå's `pitea-customisation`.
+All Eslöv-specific site code lives in **one plugin**, similar to Piteå's `pitea-customisation`.
 
-**Reference data:** `eslov-2026-06-23-77d6623-lean.sql` at repo root (~610 MB lean dump). Import with `ddev import-db --file=eslov-2026-06-23-77d6623-lean.sql` before running migration commands. Log/audit/cache table data (incl. Aryo failed-login rows) is omitted — content and module data are intact.
+**Location:** `wp-content/plugins/eslov-customisation/` (its own git repo, installed under `wp-content/plugins/`).
 
-**Location:** `wp-content/plugins/eslov-customisation/` (or Composer VCS package in `composer.local.json`).
+**Cutover status:** production is live on standard Municipio. `wp eslov migrate` already ran. The command classes stay in the plugin as a frozen record. Do not register new migrate commands, and do not re-run `migrate all` to fix a newly reported bug.
 
-## Two fix types — choose deliberately
+## Where new fixes go
 
-| Type | Purpose | Lifecycle |
-|------|---------|-----------|
-| **One-time migration** | Rewrite DB: meta keys, module JSON, options | WP-CLI command; idempotent; `--dry-run` support; can deprecate after prod run |
-| **Runtime shim** | Bridge unmigrated rows or permanent site preference | Hook/filter in plugin bootstrap; document why it stays |
+| Kind of bug | Where |
+|-------------|--------|
+| Rendering, layout, missing behaviour, site preference | Hook, view, or CSS under `source/php/Customisations/` (or the relevant module views) |
+| One post or one field still wrong | A narrow data repair that is **not** added to `MigrationRegistry` |
+| Something the old cutover script already knew how to rewrite | Leave the frozen command alone unless someone explicitly asks to re-run it |
 
-**Project owner preference:** default to **one-time migration** — transform imported data so new Municipio/Modularity reads it natively. Do **not** add permanent legacy shims that translate old LTS meta on every request unless migration is infeasible.
+The old default — "add a one-time `wp eslov migrate` task" — applied during cutover. It does not apply to bugs found after go-live.
 
-Use shims only when:
-- Data cannot be rewritten safely (ambiguous/lossy transform, serialized edge cases)
-- The issue is an **upstream core bug**, not old data shape
-- The fix is an **ongoing site preference** (e.g. old `settings.php` filters), not a DB incompatibility
-- Editors need ongoing custom UI (ACF extensions) that standard fields do not provide
-
-If you reach for a shim, document in the breakage matrix **why migration was rejected**.
-
-## Recommended plugin structure
+## Where code goes
 
 ```
 eslov-customisation/
-├── eslov-customisation.php      # Bootstrap, load CLI + hooks
+├── eslov-customisation.php          # Bootstrap
 ├── source/php/
-│   ├── App.php                  # Hook registration
-│   ├── Cli/
-│   │   ├── MigrateCommand.php   # wp eslov migrate …
-│   │   └── …                    # One command per migration concern
-│   ├── Migration/
-│   │   ├── MetaKeyMigrator.php  # Pure transform logic (testable)
-│   │   └── ModuleJsonMigrator.php
-│   └── Shim/
-│       └── …                    # Runtime filters (minimal)
-└── composer.json                # PSR-4 autoload if needed
+│   ├── App.php                      # Registers runtime classes
+│   ├── Customisations/              # Hooks, views data, site behaviour
+│   ├── Cli/Migrate/                 # FROZEN cutover commands — do not add files
+│   └── Migration/                   # FROZEN cutover transforms — do not add files
+└── source/sass/                     # Site CSS
 ```
 
-## WP-CLI command pattern
+Add a runtime fix by creating a class in `source/php/Customisations/`, wiring hooks in its constructor, and adding the class to `App::registerInstances()`.
 
-Register when `WP_CLI` is defined:
-
-```php
-if (defined('WP_CLI') && WP_CLI) {
-    \WP_CLI::add_command('eslov migrate', MigrateCommand::class);
-}
-```
-
-Command conventions:
-
-- Support `--dry-run` (log changes, don't write)
-- Support `--post-id=` for single-post debugging
-- Log counts: `Migrated 142 posts, skipped 0, errors 2`
-- Make commands **idempotent** (safe to re-run)
-
-Example invocations:
-
-```bash
-ddev wp eslov migrate modules --dry-run
-ddev wp eslov migrate meta-keys --post-id=123
-ddev wp eslov migrate options
-```
-
-## Runtime shim pattern
-
-For ongoing Municipio preferences (from LTS `settings.php` etc.):
-
-```php
-add_filter('Municipio/Hook/showSiteNameInSearchResult', '__return_false');
-```
-
-Document in plugin README or docblock **which LTS file** this replaces and whether it can be removed after data migration.
+`source/php/Cli/` and `source/php/Migration/` are the frozen cutover suite (`CliBootstrap`, `MigrationRegistry`). Leave them in the repo. Do not register another command there.
 
 ## Serialized meta
 
-WordPress stores serialized PHP arrays in `postmeta`. Use:
+If a narrow repair must write post meta, WordPress stores serialized PHP arrays in `postmeta`. Use:
 
 - `maybe_unserialize()` when reading
 - `update_post_meta()` when writing (WordPress re-serializes)
-- Never blind `search-replace` on serialized values — use dedicated migrator classes
+- Never blind `search-replace` on serialized values
 
-For Modularity layouts, inspect actual JSON/meta structure on a sample post before writing transforms:
+For Modularity layouts, inspect actual JSON/meta structure on a sample post before writing a repair:
 
 ```bash
-ddev wp post meta get {ID} _modularity
-ddev wp post meta list {ID} --keys=*
+wp post meta get {ID} _modularity
+wp post meta list {ID} --keys=*
 ```
 
 ## Register in Composer (optional)
@@ -112,22 +68,21 @@ If the plugin is its own Git repo:
 }
 ```
 
-For local development without VCS, place directly in `wp-content/plugins/eslov-customisation/` and activate:
-
-```bash
-ddev wp plugin activate eslov-customisation
-```
+For local development without VCS, place the plugin in `wp-content/plugins/eslov-customisation/` and activate it with `wp plugin activate eslov-customisation`.
 
 ## Logging fixes
 
-Every fix must get a row in `.cursor/plans/db-migration.md`:
+Log new production bugs under **Post-cutover breakage** in `.cursor/plans/db-migration.md`:
 
-| Error / symptom | Root cause | Fix type | Command/hook | Status |
-|-----------------|------------|----------|--------------|--------|
+| Error / symptom | Page / context | Cause | Fix | Status |
+|-----------------|----------------|-------|-----|--------|
+
+The older breakage matrix above that section is the cutover log. Do not reopen it as the work queue.
 
 ## What NOT to put here
 
-- LTS plugin copies (`mod-open-hours`, `swimport`, etc.) — transform their **data** instead
+- New `wp eslov migrate` commands
+- Copies of old LTS plugins
 - Theme edits
 - One-off scripts outside the plugin (hard for agents to find)
 
@@ -135,7 +90,6 @@ Every fix must get a row in `.cursor/plans/db-migration.md`:
 
 | Skill | When |
 |-------|------|
-| `municipio-extend-via-hooks` | Shim hook reference |
-| `ddev-wp-cli` | Run commands, import DB |
-| `municipio-framework` | Understand what new code expects |
+| `municipio-extend-via-hooks` | Hook and view-override reference |
+| `municipio-framework` | Understand what current Municipio expects |
 | `composer-local-merge` | VCS package registration |
