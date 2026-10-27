@@ -21,8 +21,9 @@
     "considbrs-webdev/modularity-noticeboard": "dev-dev",
     "helsingborg-stad/api-event-manager": "3.19.0",
     "considbrs-webdev/eslov-customisation": "dev-main",
+    "considbrs-webdev/eslov-event-review": "dev-main",
     "municipio-se/visma-xml-import": "dev-main",
-    "considbrs-webdev/typesense-search": "1.9.0",
+    "considbrs-webdev/typesense-search": "1.9.2",
     "wpackagist-plugin/mailpoet": "^5.17",
     "wpackagist-plugin/two-factor": "^0.9.1"
   }
