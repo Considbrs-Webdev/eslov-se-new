@@ -20,6 +20,8 @@
 #   RESTART_NGINX_PHPFPM     Set to 1 to restart nginx + php8.3-fpm via sudo /etc/init.d (GleSYS)
 #   PURGE_LITESPEED          Set to 1 to run wp litespeed-purge (oderland default 1; leave unset on GleSYS)
 #   CF_CLIENT_ACCESS_ID      Cloudflare Access service token id (staging/production; maps to TUNNEL_SERVICE_TOKEN_ID)
+#   CLOUDFLARED_VERSION      Optional cloudflared release tag (staging/production; default in the install step). Set together with CLOUDFLARED_SHA256.
+#   CLOUDFLARED_SHA256       SHA-256 of cloudflared-linux-amd64 for that release
 #
 # Per-environment secrets:
 #   DEPLOY_SSH_PRIVATE_KEY
@@ -209,10 +211,17 @@ jobs:
       - name: Install cloudflared
         if: inputs.environment == 'staging' || inputs.environment == 'production'
         env:
-          CLOUDFLARED_VERSION: "2026.8.2"
-          CLOUDFLARED_SHA256: "fcfb02b575a52ca1af2e3267af4e1517bcdeb30ac48c834c69abaed3c0576ad2"
+          CLOUDFLARED_VERSION: ${{ vars.CLOUDFLARED_VERSION || '2026.8.2' }}
+          CLOUDFLARED_SHA256: ${{ vars.CLOUDFLARED_SHA256 || 'fcfb02b575a52ca1af2e3267af4e1517bcdeb30ac48c834c69abaed3c0576ad2' }}
+          VERSION_OVERRIDE: ${{ vars.CLOUDFLARED_VERSION }}
+          SHA256_OVERRIDE: ${{ vars.CLOUDFLARED_SHA256 }}
         run: |
           set -euo pipefail
+          # A version override without a matching hash would fail the checksum below; catch it early.
+          if [ -n "$VERSION_OVERRIDE" ] && [ -z "$SHA256_OVERRIDE" ]; then
+            echo "::error::CLOUDFLARED_VERSION is set but CLOUDFLARED_SHA256 is not."
+            exit 1
+          fi
           curl -fsSL "https://github.com/cloudflare/cloudflared/releases/download/${CLOUDFLARED_VERSION}/cloudflared-linux-amd64" \
             -o /tmp/cloudflared
           echo "${CLOUDFLARED_SHA256}  /tmp/cloudflared" | sha256sum -c -
