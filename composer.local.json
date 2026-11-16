@@ -22,6 +22,7 @@
     "helsingborg-stad/api-event-manager": "3.19.0",
     "considbrs-webdev/eslov-customisation": "dev-main",
     "considbrs-webdev/eslov-event-review": "dev-main",
+    "considbrs-webdev/modularity-opening-hours": "1.1.0",
     "municipio-se/visma-xml-import": "dev-main",
     "considbrs-webdev/typesense-search": "1.9.2",
     "wpackagist-plugin/mailpoet": "^5.17",
