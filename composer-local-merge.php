@@ -51,14 +51,18 @@ class ComposerLocalMerge
             return;
         }
 
-        $localRequirements = $this->getLocalRequirements($localPath);
-        
-        if (empty($localRequirements['require']) && empty($localRequirements['require-dev'])) {
-            echo "composer.local.json has no requirements - skipping merge\n";
-            return;
-        }
-
         try {
+            $localRequirements = $this->getLocalRequirements($localPath);
+
+            if (
+                empty($localRequirements['require'])
+                && empty($localRequirements['require-dev'])
+                && empty($localRequirements['exclude'])
+            ) {
+                echo "composer.local.json has no requirements - skipping merge\n";
+                return;
+            }
+
             $this->performMerge($localRequirements);
             echo "Successfully merged local requirements\n";
         } catch (Exception $e) {
@@ -142,6 +146,8 @@ class ComposerLocalMerge
             echo "✓ Merged " . max(0, $mergedCount) . " repositories\n";
         }
 
+        $this->excludePackages($composer, $localRequirements['exclude']);
+
         $this->writeJson($composerPath, $composer);
         
         // Create flag file to indicate merge was performed
@@ -219,8 +225,63 @@ class ComposerLocalMerge
         return [
             'require' => $data['require'] ?? [],
             'require-dev' => $data['require-dev'] ?? [],
-            'repositories' => $data['repositories'] ?? []
+            'repositories' => $data['repositories'] ?? [],
+            'exclude' => $this->normalizeExclude($data['exclude'] ?? []),
         ];
+    }
+
+    /**
+     * Read the exclude list from composer.local.json.
+     *
+     * @param mixed $exclude Raw JSON value.
+     * @return list<string> Package names to drop from the merged manifest.
+     * @throws Exception If exclude is not a list of package names.
+     */
+    private function normalizeExclude(mixed $exclude): array
+    {
+        if ($exclude === []) {
+            return [];
+        }
+
+        if (!is_array($exclude) || array_keys($exclude) !== range(0, count($exclude) - 1)) {
+            throw new Exception('composer.local.json exclude must be a list of package names');
+        }
+
+        $packages = [];
+        foreach ($exclude as $package) {
+            if (!is_string($package) || !str_contains($package, '/')) {
+                throw new Exception('composer.local.json exclude entries must be package names');
+            }
+            $packages[] = $package;
+        }
+
+        return $packages;
+    }
+
+    /**
+     * Drop excluded packages after local requirements are merged, so exclude wins.
+     *
+     * @param array<string, mixed> $composer Merged manifest, modified in place.
+     * @param list<string> $packages Package names from composer.local.json.
+     */
+    private function excludePackages(array &$composer, array $packages): void
+    {
+        foreach ($packages as $package) {
+            $removed = false;
+            foreach (['require', 'require-dev'] as $section) {
+                if (isset($composer[$section][$package])) {
+                    unset($composer[$section][$package]);
+                    $removed = true;
+                }
+            }
+
+            if ($removed) {
+                echo "✓ Excluded {$package}\n";
+                continue;
+            }
+
+            echo "✓ Exclude {$package} (not in require or require-dev)\n";
+        }
     }
 
     /**

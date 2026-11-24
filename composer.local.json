@@ -27,5 +27,8 @@
     "considbrs-webdev/typesense-search": "1.9.2",
     "wpackagist-plugin/mailpoet": "^5.17",
     "wpackagist-plugin/two-factor": "^0.9.1"
-  }
+  },
+  "exclude": [
+    "municipio-se/modularity-noticeboard"
+  ]
 }
