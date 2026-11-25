@@ -17,15 +17,18 @@
     }
   ],
   "require": {
-    "considbrs-webdev/eslov-customisation": "1.3.2",
+    "considbrs-webdev/eslov-customisation": "1.4.0",
     "considbrs-webdev/eslov-event-review": "dev-main",
     "considbrs-webdev/modularity-arcgis-map": "dev-dev",
     "considbrs-webdev/modularity-noticeboard": "dev-dev",
-    "considbrs-webdev/typesense-search": "1.9.2",
     "helsingborg-stad/api-event-manager": "3.19.0",
-    "considbrs-webdev/modularity-opening-hours": "1.1.1",
+    "considbrs-webdev/modularity-opening-hours": "1.1.0",
     "municipio-se/visma-xml-import": "dev-main",
+    "considbrs-webdev/typesense-search": "1.9.2",
     "wpackagist-plugin/mailpoet": "^5.17",
     "wpackagist-plugin/two-factor": "^0.9.1"
-  }
+  },
+  "exclude": [
+    "municipio-se/modularity-noticeboard"
+  ]
 }
