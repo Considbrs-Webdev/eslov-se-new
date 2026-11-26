@@ -25,8 +25,10 @@
     "considbrs-webdev/modularity-opening-hours": "1.1.0",
     "municipio-se/visma-xml-import": "dev-main",
     "considbrs-webdev/typesense-search": "1.9.2",
-    "wpackagist-plugin/mailpoet": "^5.17",
-    "wpackagist-plugin/two-factor": "^0.9.1"
+    "wpackagist-plugin/mailpoet": "5.46.0",
+    "wpackagist-plugin/two-factor": "0.17.0",
+    "wpackagist-plugin/revisionary": "4.3.6",
+    "considbrs-webdev/revisionary-municipio-frontend": "1.1.0"
   },
   "exclude": [
     "municipio-se/modularity-noticeboard"
