@@ -28,6 +28,7 @@
     "municipio-se/visma-xml-import": "dev-main",
     "wpackagist-plugin/mailpoet": "5.46.0",
     "wpackagist-plugin/revisionary": "4.3.6",
+    "wpackagist-plugin/role-enforcement-for-two-factor": "1.0.0",
     "wpackagist-plugin/two-factor": "0.17.0"
   },
   "exclude": [
