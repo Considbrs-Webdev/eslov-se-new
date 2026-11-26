@@ -22,7 +22,7 @@
     "considbrs-webdev/modularity-arcgis-map": "dev-dev",
     "considbrs-webdev/modularity-noticeboard": "dev-dev",
     "considbrs-webdev/modularity-opening-hours": "1.1.0",
-    "considbrs-webdev/revisionary-municipio-frontend": "1.1.0",
+    "considbrs-webdev/revisionary-municipio-frontend": "1.3.0",
     "considbrs-webdev/typesense-search": "1.9.2",
     "helsingborg-stad/api-event-manager": "3.19.0",
     "municipio-se/visma-xml-import": "dev-main",
