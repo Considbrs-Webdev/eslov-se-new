@@ -17,7 +17,7 @@
     }
   ],
   "require": {
-    "considbrs-webdev/eslov-customisation": "1.4.1",
+    "considbrs-webdev/eslov-customisation": "1.5.0",
     "considbrs-webdev/eslov-event-review": "dev-main",
     "considbrs-webdev/modularity-arcgis-map": "dev-dev",
     "considbrs-webdev/modularity-noticeboard": "dev-dev",
